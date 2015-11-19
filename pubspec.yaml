@@ -1,0 +1,6 @@
+name: game
+dependencies:
+  flutter:
+    path: ../flutter/packages/flutter
+  flutter_sprites:
+    path: ../flutter/packages/flutter_sprites

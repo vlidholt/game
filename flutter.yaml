@@ -1,0 +1,24 @@
+assets:
+  - assets/nebula.png
+  - assets/sprites.json
+  - assets/sprites.png
+  - assets/starfield.png
+  - assets/game_ui.png
+  - assets/game_ui.json
+  - assets/music_game.mp3
+  - assets/music_boss.mp3
+  - assets/music_intro.mp3
+  - assets/explosion_0.wav
+  - assets/explosion_1.wav
+  - assets/explosion_2.wav
+  - assets/explosion_boss.wav
+  - assets/explosion_player.wav
+  - assets/laser.wav
+  - assets/hit.wav
+  - assets/levelup.wav
+  - assets/pickup_0.wav
+  - assets/pickup_1.wav
+  - assets/pickup_2.wav
+  - assets/pickup_powerup.wav
+  - assets/click.wav
+  - assets/buy_upgrade.wav
