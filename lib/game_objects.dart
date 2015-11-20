@@ -62,6 +62,8 @@ abstract class GameObject extends Node {
     if (damage >= maxDamage) {
       destroy();
       f.playerState.score += (maxDamage * 10).ceil();
+    } else {
+      SoundEffectPlayer.sharedInstance().play(f.sounds["hit"]);
     }
   }
 
@@ -215,9 +217,20 @@ class Laser extends GameObject {
   }
 }
 
-Color colorForDamage(double damage, double maxDamage) {
+Color colorForDamage(double damage, double maxDamage, [Color toColor]) {
+  int r, g, b;
+  if (toColor == null) {
+    r = 255;
+    g = 3;
+    b = 86;
+  } else {
+    r = toColor.red;
+    g = toColor.green;
+    b = toColor.blue;
+  }
+
   int alpha = ((200.0 * damage) ~/ maxDamage).clamp(0, 200);
-  return new Color.fromARGB(alpha, 255, 3, 86);
+  return new Color.fromARGB(alpha, r, g, b);
 }
 
 abstract class Obstacle extends GameObject {
@@ -280,10 +293,36 @@ class AsteroidSmall extends Asteroid {
 }
 
 class AsteroidPowerUp extends AsteroidBig {
-  AsteroidPowerUp(GameObjectFactory f) : super(f);
+  PowerUpType _powerUpType;
+
+  AsteroidPowerUp(GameObjectFactory f) : super(f) {
+    _powerUpType = nextPowerUpType();
+
+    removeAllChildren();
+
+    Sprite powerUpBg = new Sprite(f.sheet["powerup.png"]);
+    powerUpBg.scale = 0.3;
+    addChild(powerUpBg);
+
+    Sprite powerUpIcon = new Sprite(f.sheet["powerup_${_powerUpType.index}.png"]);
+    powerUpIcon.scale = 0.3;
+    addChild(powerUpIcon);
+
+    _sprite = new Sprite(f.sheet["crystal_${randomInt(2)}.png"]);
+    _sprite.scale = 0.3;
+    addChild(_sprite);
+  }
+
+  void setupActions() {
+  }
 
   Collectable createPowerUp() {
-    return new PowerUp(f, nextPowerUpType());
+    return new PowerUp(f, _powerUpType);
+  }
+
+  set damage(double d) {
+    super.damage = d;
+    _sprite.colorOverlay = colorForDamage(d, maxDamage, new Color.fromARGB(255, 200, 200, 255));
   }
 }
 
@@ -378,6 +417,8 @@ class EnemyDestroyer extends Obstacle {
     _countDown -= 1;
     if (_countDown <= 0) {
       // Shoot at player
+      SoundEffectPlayer.sharedInstance().play(f.sounds["laser"]);
+
       EnemyLaser laser = new EnemyLaser(f, rotation, 5.0, new Color(0xffffe38e));
       laser.position = position;
       f.level.addChild(laser);
@@ -420,8 +461,8 @@ class EnemyLaser extends Obstacle {
 class EnemyBoss extends Obstacle {
   EnemyBoss(GameObjectFactory f) : super(f) {
     radius = 48.0;
-    _sprite = new Sprite(f.sheet["enemy_destroyer_1.png"]);
-    _sprite.scale = 0.64;
+    _sprite = new Sprite(f.sheet["enemy_boss_0.png"]);
+    _sprite.scale = 0.32;
     addChild(_sprite);
     maxDamage = 40.0;
 
@@ -446,6 +487,8 @@ class EnemyBoss extends Obstacle {
     _countDown -= 1;
     if (_countDown <= 0) {
       // Shoot at player
+      SoundEffectPlayer.sharedInstance().play(f.sounds["laser"]);
+
       fire(10.0);
       fire(0.0);
       fire(-10.0);
@@ -542,6 +585,7 @@ class Coin extends Collectable {
   Sprite _sprite;
 
   void collect() {
+    SoundEffectPlayer.sharedInstance().play(f.sounds["pickup_0"]);
     f.playerState.addCoin(this);
     super.collect();
   }
@@ -571,9 +615,13 @@ PowerUpType nextPowerUpType() {
 
 class PowerUp extends Collectable {
   PowerUp(GameObjectFactory f, this.type) : super(f) {
-    _sprite = new Sprite(f.sheet["coin.png"]);
-    _sprite.scale = 1.2;
+    _sprite = new Sprite(f.sheet["powerup.png"]);
+    _sprite.scale = 0.3;
     addChild(_sprite);
+
+    Sprite powerUpIcon = new Sprite(f.sheet["powerup_${type.index}.png"]);
+    powerUpIcon.scale = 0.3;
+    addChild(powerUpIcon);
 
     radius = 10.0;
   }
@@ -591,6 +639,7 @@ class PowerUp extends Collectable {
   }
 
   void collect() {
+    SoundEffectPlayer.sharedInstance().play(f.sounds["buy_upgrade"]);
     f.playerState.activatePowerUp(type);
     super.collect();
   }
