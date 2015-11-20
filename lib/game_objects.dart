@@ -459,12 +459,12 @@ class EnemyLaser extends Obstacle {
 }
 
 class EnemyBoss extends Obstacle {
-  EnemyBoss(GameObjectFactory f) : super(f) {
+  EnemyBoss(GameObjectFactory f, int level) : super(f) {
     radius = 48.0;
-    _sprite = new Sprite(f.sheet["enemy_boss_0.png"]);
+    _sprite = new Sprite(f.sheet["enemy_boss_${level % 3}.png"]);
     _sprite.scale = 0.32;
     addChild(_sprite);
-    maxDamage = 40.0;
+    maxDamage = 40.0 + 20.0 * level;
 
     constraints = <Constraint>[new ConstraintRotationToNode(f.level.ship, dampening: 0.05)];
 

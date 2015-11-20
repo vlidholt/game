@@ -47,7 +47,7 @@ class GameObjectFactory {
 
   void addBossFight(int l, double yPos) {
     // Add boss
-    EnemyBoss boss = new EnemyBoss(this);
+    EnemyBoss boss = new EnemyBoss(this, l);
     Point pos = new Point(0.0, yPos + _chunkSpacing / 2.0);
 
     addGameObject(boss, pos);
