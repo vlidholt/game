@@ -1,0 +1,94 @@
+part of game;
+
+enum CoordinateSystemType {
+  fixedWidth,
+  fixedHeight,
+  stretch,
+}
+
+class RenderCoordinateSystem extends RenderProxyBox {
+  RenderCoordinateSystem({
+    Size systemSize,
+    CoordinateSystemType systemType,
+    RenderBox child
+  }) : super(child) {
+    assert(systemSize != null);
+    assert(systemType != null);
+    this.systemSize = systemSize;
+    this.systemType = systemType;
+  }
+
+  Size get systemSize => _systemSize;
+  Size _systemSize;
+  void set systemSize(Size systemSize) {
+    if (_systemSize == systemSize)
+      return;
+    _systemSize = systemSize;
+    markNeedsPaint();
+  }
+
+  CoordinateSystemType get systemType => _systemType;
+  CoordinateSystemType _systemType;
+  void set systemType(CoordinateSystemType systemType) {
+    if (_systemType == systemType)
+      return;
+    _systemType = systemType;
+    markNeedsPaint();
+  }
+
+  Matrix4 get _effectiveTransform {
+    double scaleX = 1.0;
+    double scaleY = 1.0;
+
+    switch(systemType) {
+      case CoordinateSystemType.stretch:
+        scaleX = size.width/systemSize.width;
+        scaleY = size.height/systemSize.height;
+        break;
+      case CoordinateSystemType.fixedWidth:
+        scaleX = size.width/systemSize.width;
+        scaleY = scaleX;
+        break;
+      case CoordinateSystemType.fixedHeight:
+        scaleY = size.height/systemSize.height;
+        scaleX = scaleY;
+        break;
+      default:
+        assert(false);
+    }
+
+    Matrix4 transformMatrix = new Matrix4.identity();
+    transformMatrix.scale(scaleX, scaleY);
+
+    return transformMatrix;
+  }
+
+  bool hitTest(HitTestResult result, { Point position }) {
+    Matrix4 inverse = new Matrix4.zero();
+    // TODO(abarth): Check the determinant for degeneracy.
+    inverse.copyInverse(_effectiveTransform);
+
+    Vector3 position3 = new Vector3(position.x, position.y, 0.0);
+    Vector3 transformed3 = inverse.transform3(position3);
+    Point transformed = new Point(transformed3.x, transformed3.y);
+    return super.hitTest(result, position: transformed);
+  }
+
+  void paint(PaintingContext context, Offset offset) {
+    if (child != null)
+      context.paintChildWithTransform(child, offset.toPoint(), _effectiveTransform);
+  }
+
+  void applyPaintTransform(Matrix4 transform) {
+    super.applyPaintTransform(transform);
+    transform.multiply(_effectiveTransform);
+  }
+
+  void debugDescribeSettings(List<String> settings) {
+    super.debugDescribeSettings(settings);
+    settings.add('systemSize: $systemSize');
+    settings.add('systemType: $systemType');
+  }
+
+  // Perform layout
+}

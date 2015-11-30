@@ -122,38 +122,54 @@ class GameDemoState extends State<GameDemo> {
   Widget _buildMainScene(RouteArguments args) {
     NavigatorState navigatorState = Navigator.of(args.context);
 
-    return new Stack(<Widget>[
-      new SpriteWidget(new MainScreenBackground(), SpriteBoxTransformMode.fixedWidth),
-      new Column(<Widget>[
-          new TextureButton(
-            onPressed: () {
-              _game = new GameDemoNode(
-                _imageMap,
-                _spriteSheet,
-                _spriteSheetUI,
-                _sounds,
-                (int lastScore) {
-                  setState(() { _lastScore = lastScore; });
-                  navigatorState.pop();
-                }
+    return new CoordinateSystem(
+      systemSize: new Size(320.0, 320.0),
+      child:new DefaultTextStyle(
+        style: new TextStyle(fontSize:20.0),
+        child: new Stack(<Widget>[
+          new SpriteWidget(new MainScreenBackground(), SpriteBoxTransformMode.fixedWidth),
+          new ScrollableList<String>(
+            items: ["Hey", "ho", "let's", "go"],
+            itemExtent: 50.0,
+            itemBuilder: (BuildContext context, String data, int index) {
+              return new ListItem(
+                key: new Key(data),
+                center: new Text(data)
               );
-              navigatorState.pushNamed('/game');
-            },
-            texture: _spriteSheetUI['btn_play_up.png'],
-            textureDown: _spriteSheetUI['btn_play_down.png'],
-            width: 128.0,
-            height: 128.0
+            }
           ),
-          new DefaultTextStyle(
-            child: new Text(
-              "Last Score: $_lastScore"
-            ),
-            style: new TextStyle(fontSize:20.0)
+          new Column(<Widget>[
+              new TextureButton(
+                onPressed: () {
+                  _game = new GameDemoNode(
+                    _imageMap,
+                    _spriteSheet,
+                    _spriteSheetUI,
+                    _sounds,
+                    (int lastScore) {
+                      setState(() { _lastScore = lastScore; });
+                      navigatorState.pop();
+                    }
+                  );
+                  navigatorState.pushNamed('/game');
+                },
+                texture: _spriteSheetUI['btn_play.png'],
+                textureDown: _spriteSheetUI['btn_play.png'],
+                width: 128.0,
+                height: 128.0
+              ),
+              new DefaultTextStyle(
+                child: new Text(
+                  "Last Score: $_lastScore"
+                ),
+                style: new TextStyle(fontSize:20.0)
+              )
+            ],
+            justifyContent: FlexJustifyContent.center
           )
-        ],
-        justifyContent: FlexJustifyContent.center
+        ])
       )
-    ]);
+    );
   }
 }
 
