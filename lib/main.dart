@@ -36,6 +36,9 @@ main() async {
     'assets/sprites.png',
     'assets/starfield.png',
     'assets/game_ui.png',
+    'assets/ui_bg_top.png',
+    'assets/ui_bg_bottom.png',
+    'assets/ui_popup.png',
   ]));
 
   // TODO(eseidel): SoundEffect doesn't really do anything except hold a future.
@@ -154,9 +157,8 @@ class GameDemoState extends State<GameDemo> {
                   navigatorState.pushNamed('/game');
                 },
                 texture: _spriteSheetUI['btn_play.png'],
-                textureDown: _spriteSheetUI['btn_play.png'],
-                width: 128.0,
-                height: 128.0
+                width: 181.0,
+                height: 62.0
               ),
               new DefaultTextStyle(
                 child: new Text(
@@ -237,10 +239,19 @@ class TextureButtonState extends State<TextureButton> {
       return;
 
     canvas.save();
-    if (_highlight && config.textureDown != null) {
+    if (_highlight) {
       // Draw down state
-      canvas.scale(size.width / config.textureDown.size.width, size.height / config.textureDown.size.height);
-      config.textureDown.drawTexture(canvas, Point.origin, new Paint());
+      if (config.textureDown != null) {
+        canvas.scale(size.width / config.textureDown.size.width, size.height / config.textureDown.size.height);
+        config.textureDown.drawTexture(canvas, Point.origin, new Paint());
+      } else {
+        canvas.scale(size.width / config.texture.size.width, size.height / config.texture.size.height);
+        config.texture.drawTexture(
+          canvas,
+          Point.origin,
+          new Paint()..colorFilter = new ColorFilter.mode(new Color(0x66000000), TransferMode.srcATop)
+        );
+      }
     } else {
       // Draw up state
       canvas.scale(size.width / config.texture.size.width, size.height / config.texture.size.height);
@@ -287,15 +298,32 @@ class _TextureButtonToken {
 }
 
 class MainScreenBackground extends NodeWithSize {
+  Sprite _bgTop;
+  Sprite _bgBottom;
+
   MainScreenBackground() : super(new Size(320.0, 320.0)) {
     assert(_spriteSheet.image != null);
 
     StarField starField = new StarField(_spriteSheet, 200, true);
     addChild(starField);
+
+    _bgTop = new Sprite.fromImage(_imageMap["assets/ui_bg_top.png"]);
+    _bgTop.pivot = Point.origin;
+    _bgTop.size = new Size(320.0, 108.0);
+    addChild(_bgTop);
+
+    _bgBottom = new Sprite.fromImage(_imageMap["assets/ui_bg_bottom.png"]);
+    _bgBottom.pivot = new Point(0.0, 1.0);
+    _bgBottom.size = new Size(320.0, 97.0);
+    addChild(_bgBottom);
   }
 
   void paint(PaintingCanvas canvas) {
     canvas.drawRect(new Rect.fromLTWH(0.0, 0.0, 320.0, 320.0), new Paint()..color=new Color(0xff000000));
     super.paint(canvas);
+  }
+
+  void spriteBoxPerformedLayout() {
+    _bgBottom.position = new Point(0.0, spriteBox.visibleArea.size.height);
   }
 }
