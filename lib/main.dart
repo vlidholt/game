@@ -184,10 +184,13 @@ class GameDemoState extends State<GameDemo> {
   }
 
   Widget _buildPowerUpButton(PowerUpType type) {
-    return new TextureButton(
-      texture: _spriteSheetUI['btn_powerup_${type.index}.png'],
-      width: 57.0,
-      height: 57.0
+    return new Padding(
+      padding: new EdgeDims.all(5.0),
+      child: new TextureButton(
+        texture: _spriteSheetUI['btn_powerup_${type.index}.png'],
+        width: 57.0,
+        height: 57.0
+      )
     );
   }
 }
