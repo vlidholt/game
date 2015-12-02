@@ -142,45 +142,96 @@ class GameDemoState extends State<GameDemo> {
             }
           ),
           new Column(<Widget>[
-              new TextureButton(
-                onPressed: () {
-                  _game = new GameDemoNode(
-                    _imageMap,
-                    _spriteSheet,
-                    _spriteSheetUI,
-                    _sounds,
-                    (int lastScore) {
-                      setState(() { _lastScore = lastScore; });
-                      navigatorState.pop();
-                    }
-                  );
-                  navigatorState.pushNamed('/game');
-                },
-                texture: _spriteSheetUI['btn_play.png'],
-                label: "PLAY",
-                width: 181.0,
-                height: 62.0
-              ),
-              new Row(<Widget>[
-                  _buildPowerUpButton(PowerUpType.shield),
-                  _buildPowerUpButton(PowerUpType.sideLaser),
-                  _buildPowerUpButton(PowerUpType.speedBoost),
-                  _buildPowerUpButton(PowerUpType.speedLaser),
-                ],
-                justifyContent: FlexJustifyContent.center
-              ),
-              new DefaultTextStyle(
-                child: new Text(
-                  "Last Score: $_lastScore"
-                ),
-                style: new TextStyle(fontSize:20.0)
-              )
-            ],
-            justifyContent: FlexJustifyContent.center
-          )
+            new SizedBox(
+              width: 320.0,
+              height: 106.0,
+              child: _buildTopBar()
+            ),
+            new Flexible(
+              child: _buildCenterArea()
+            ),
+            new SizedBox(
+              width: 320.0,
+              height: 93.0,
+              child: _buildBottomBar(navigatorState)
+            )
+          ])
         ])
       )
     );
+  }
+
+  Widget _buildTopBar() {
+    return new Text("Hello");
+  }
+
+  Widget _buildCenterArea() {
+    return new Column(<Widget>[
+        new Row(<Widget>[
+            _buildPowerUpButton(PowerUpType.shield),
+            _buildPowerUpButton(PowerUpType.sideLaser),
+            _buildPowerUpButton(PowerUpType.speedBoost),
+            _buildPowerUpButton(PowerUpType.speedLaser),
+          ],
+        justifyContent: FlexJustifyContent.center)
+      ],
+      justifyContent: FlexJustifyContent.center
+    );
+  }
+
+  Widget _buildBottomBar(NavigatorState navigatorState) {
+    return new Stack([
+      new Positioned(
+        left: 18.0,
+        top: 14.0,
+        child: new TextureButton(
+          texture: _spriteSheetUI['level_display.png'],
+          width: 62.0,
+          height: 62.0
+        )
+      ),
+      new Positioned(
+        left: 85.0,
+        top: 14.0,
+        child: new TextureButton(
+          texture: _spriteSheetUI['btn_level_up.png'],
+          width: 30.0,
+          height: 30.0
+        )
+      ),
+      new Positioned(
+        left: 85.0,
+        top: 46.0,
+        child: new TextureButton(
+          texture: _spriteSheetUI['btn_level_down.png'],
+          width: 30.0,
+          height: 30.0
+        )
+      ),
+      new Positioned(
+        left: 120.0,
+        top: 14.0,
+        child: new TextureButton(
+          onPressed: () {
+            _game = new GameDemoNode(
+              _imageMap,
+              _spriteSheet,
+              _spriteSheetUI,
+              _sounds,
+              (int lastScore) {
+                setState(() { _lastScore = lastScore; });
+                navigatorState.pop();
+              }
+            );
+            navigatorState.pushNamed('/game');
+          },
+          texture: _spriteSheetUI['btn_play.png'],
+          label: "PLAY",
+          width: 181.0,
+          height: 62.0
+        )
+      )
+    ]);
   }
 
   Widget _buildPowerUpButton(PowerUpType type) {
