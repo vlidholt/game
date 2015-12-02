@@ -19,7 +19,6 @@ part 'player_state.dart';
 part 'power_bar.dart';
 part 'repeated_image.dart';
 part 'star_field.dart';
-part 'textured_button.dart';
 
 part 'coordinate_system.dart';
 part 'render_coordinate_system.dart';
