@@ -157,8 +157,17 @@ class GameDemoState extends State<GameDemo> {
                   navigatorState.pushNamed('/game');
                 },
                 texture: _spriteSheetUI['btn_play.png'],
+                label: "PLAY",
                 width: 181.0,
                 height: 62.0
+              ),
+              new Row(<Widget>[
+                  _buildPowerUpButton(PowerUpType.shield),
+                  _buildPowerUpButton(PowerUpType.sideLaser),
+                  _buildPowerUpButton(PowerUpType.speedBoost),
+                  _buildPowerUpButton(PowerUpType.speedLaser),
+                ],
+                justifyContent: FlexJustifyContent.center
               ),
               new DefaultTextStyle(
                 child: new Text(
@@ -173,6 +182,14 @@ class GameDemoState extends State<GameDemo> {
       )
     );
   }
+
+  Widget _buildPowerUpButton(PowerUpType type) {
+    return new TextureButton(
+      texture: _spriteSheetUI['btn_powerup_${type.index}.png'],
+      width: 57.0,
+      height: 57.0
+    );
+  }
 }
 
 class TextureButton extends StatefulComponent {
@@ -182,12 +199,16 @@ class TextureButton extends StatefulComponent {
     this.texture,
     this.textureDown,
     this.width: 128.0,
-    this.height: 128.0
+    this.height: 128.0,
+    this.label,
+    this.textStyle
   }) : super(key: key);
 
   final VoidCallback onPressed;
   final Texture texture;
   final Texture textureDown;
+  final TextStyle textStyle;
+  final String label;
   final double width;
   final double height;
 
@@ -209,7 +230,9 @@ class TextureButtonState extends State<TextureButton> {
             config.texture,
             config.textureDown,
             config.width,
-            config.height
+            config.height,
+            config.label,
+            config.textStyle
           )
         )
       ),
@@ -258,6 +281,23 @@ class TextureButtonState extends State<TextureButton> {
       config.texture.drawTexture(canvas, Point.origin, new Paint());
     }
     canvas.restore();
+
+    if (config.label != null) {
+      TextStyle style;
+      if (config.textStyle == null)
+        style = new TextStyle(textAlign: TextAlign.center, fontSize: 24.0, fontWeight: FontWeight.w700);
+      else
+        style = config.textStyle;
+
+      PlainTextSpan textSpan = new PlainTextSpan(config.label);
+      StyledTextSpan styledTextSpan = new StyledTextSpan(style, <TextSpan>[textSpan]);
+      TextPainter painter = new TextPainter(styledTextSpan);
+
+      painter.maxWidth = size.width;
+      painter.minWidth = 0.0;
+      painter.layout();
+      painter.paint(canvas, new Offset(0.0, size.height / 2.0 - painter.height / 2.0 ));
+    }
   }
 }
 
@@ -267,7 +307,9 @@ class _TextureButtonToken {
     this._texture,
     this._textureDown,
     this._width,
-    this._height
+    this._height,
+    this._label,
+    this._textStyle
   );
 
   final bool _highlight;
@@ -275,6 +317,8 @@ class _TextureButtonToken {
   final Texture _textureDown;
   final double _width;
   final double _height;
+  final String _label;
+  final TextStyle _textStyle;
 
   bool operator== (other) {
     return
@@ -283,7 +327,9 @@ class _TextureButtonToken {
       _texture == other._texture &&
       _textureDown == other._textureDown &&
       _width == other._width &&
-      _height == other._height;
+      _height == other._height &&
+      _label == other._label &&
+      _textStyle == other._textStyle;
   }
 
   int get hashCode {
@@ -293,6 +339,8 @@ class _TextureButtonToken {
     value = 37 * value * _textureDown.hashCode;
     value = 37 * value * _width.hashCode;
     value = 37 * value * _height.hashCode;
+    value = 37 * value * _textStyle.hashCode;
+    value = 37 * value * _label.hashCode;
     return value;
   }
 }
