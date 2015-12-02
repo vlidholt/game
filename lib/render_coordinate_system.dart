@@ -90,5 +90,19 @@ class RenderCoordinateSystem extends RenderProxyBox {
     settings.add('systemType: $systemType');
   }
 
+  bool get sizedByParent => true;
+
+  void performResize() {
+    size = constraints.biggest;
+  }
+
   // Perform layout
+  void performLayout() {
+    double xScale = _effectiveTransform[0];
+    double yScale = _effectiveTransform[5];
+
+    if (child != null) {
+      child.layout(new BoxConstraints.tightFor(width: size.width / xScale, height: size.height / yScale));
+    }
+  }
 }
