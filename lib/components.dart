@@ -80,7 +80,6 @@ class TextureButtonState extends State<TextureButton> {
         )
       ),
       onTapDown: (_) {
-        SoundEffectPlayer.sharedInstance().play(_sounds["click"]);
         setState(() {
           _highlight = true;
         });
