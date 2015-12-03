@@ -10,6 +10,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_sprites/flutter_sprites.dart';
 import 'package:vector_math/vector_math_64.dart';
 
+part 'components.dart';
 part 'custom_actions.dart';
 part 'explosions.dart';
 part 'flash.dart';
