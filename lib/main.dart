@@ -108,42 +108,99 @@ class GameDemo extends StatefulComponent {
 }
 
 class GameDemoState extends State<GameDemo> {
-  NodeWithSize _game;
+
 
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: 'Asteroids',
       theme: _theme,
       routes: <String, RouteBuilder>{
-        '/': _buildMainScene,
-        '/game': _buildGameScene
+        '/': (_) => new MainScene(),
+        '/game': (_) => new GameScene()
+      }
+    );
+  }
+}
+
+class TextureImage extends StatelessComponent {
+  TextureImage({
+    Key key,
+    this.texture,
+    this.width: 128.0,
+    this.height: 128.0
+  }) : super(key: key);
+
+  final Texture texture;
+  final double width;
+  final double height;
+
+  Widget build(BuildContext context) {
+    return new Container(
+      width: width,
+      height: height,
+      child: new CustomPaint(
+        painter: new TextureImagePainter(texture, width, height)
+      )
+    );
+  }
+}
+
+class TextureImagePainter extends CustomPainter {
+  TextureImagePainter(this.texture, this.width, this.height);
+
+  final Texture texture;
+  final double width;
+  final double height;
+
+  void paint(Canvas canvas, Size size) {
+    canvas.save();
+    canvas.scale(size.width / texture.size.width, size.height / texture.size.height);
+    texture.drawTexture(canvas, Point.origin, new Paint());
+    canvas.restore();
+  }
+
+  bool shouldRepaint(TextureImagePainter oldPainter) {
+    return oldPainter.texture != texture
+      || oldPainter.width != width
+      || oldPainter.height != height;
+  }
+}
+
+class GameScene extends StatefulComponent {
+  State<GameScene> createState() => new GameSceneState();
+}
+
+class GameSceneState extends State<GameScene> {
+  NodeWithSize _game;
+
+  void initState() {
+    super.initState();
+
+    _game = new GameDemoNode(
+      _imageMap,
+      _spriteSheet,
+      _spriteSheetUI,
+      _sounds,
+      (int lastScore) {
+        setState(() { _gameState.lastScore = lastScore; });
+        Navigator.pop(context);
       }
     );
   }
 
-  Widget _buildGameScene(RouteArguments args) {
+  Widget build(BuildContext context) {
     return new SpriteWidget(_game, SpriteBoxTransformMode.fixedWidth);
   }
+}
 
-  Widget _buildMainScene(RouteArguments args) {
-    NavigatorState navigatorState = Navigator.of(args.context);
-
+class MainScene extends StatelessComponent {
+  Widget build(BuildContext context) {
     return new CoordinateSystem(
       systemSize: new Size(320.0, 320.0),
       child:new DefaultTextStyle(
         style: new TextStyle(fontSize:20.0),
         child: new Stack(<Widget>[
           new SpriteWidget(new MainScreenBackground(), SpriteBoxTransformMode.fixedWidth),
-          // new ScrollableList<String>(
-          //   items: ["Hey", "ho", "let's", "go"],
-          //   itemExtent: 50.0,
-          //   itemBuilder: (BuildContext context, String data, int index) {
-          //     return new ListItem(
-          //       key: new Key(data),
-          //       center: new Text(data)
-          //     );
-          //   }
-          // ),
           new Column(<Widget>[
             new SizedBox(
               width: 320.0,
@@ -156,7 +213,11 @@ class GameDemoState extends State<GameDemo> {
             new SizedBox(
               width: 320.0,
               height: 93.0,
-              child: _buildBottomBar(navigatorState)
+              child: new BottomBar(
+                onPlay: () {
+                  Navigator.pushNamed(context, '/game');
+                }
+              )
             )
           ])
         ])
@@ -183,61 +244,6 @@ class GameDemoState extends State<GameDemo> {
       ],
       justifyContent: FlexJustifyContent.center
     );
-  }
-
-  Widget _buildBottomBar(NavigatorState navigatorState) {
-    return new Stack([
-      new Positioned(
-        left: 18.0,
-        top: 14.0,
-        child: new TextureImage(
-          texture: _spriteSheetUI['level_display.png'],
-          width: 62.0,
-          height: 62.0
-        )
-      ),
-      new Positioned(
-        left: 85.0,
-        top: 14.0,
-        child: new TextureButton(
-          texture: _spriteSheetUI['btn_level_up.png'],
-          width: 30.0,
-          height: 30.0
-        )
-      ),
-      new Positioned(
-        left: 85.0,
-        top: 46.0,
-        child: new TextureButton(
-          texture: _spriteSheetUI['btn_level_down.png'],
-          width: 30.0,
-          height: 30.0
-        )
-      ),
-      new Positioned(
-        left: 120.0,
-        top: 14.0,
-        child: new TextureButton(
-          onPressed: () {
-            _game = new GameDemoNode(
-              _imageMap,
-              _spriteSheet,
-              _spriteSheetUI,
-              _sounds,
-              (int lastScore) {
-                setState(() { _gameState.lastScore = lastScore; });
-                navigatorState.pop();
-              }
-            );
-            navigatorState.pushNamed('/game');
-          },
-          texture: _spriteSheetUI['btn_play.png'],
-          label: "PLAY",
-          width: 181.0,
-          height: 62.0
-        )
-      )
-    ]);
   }
 
   Widget _buildPowerUpButton(PowerUpType type) {
@@ -272,56 +278,53 @@ class GameDemoState extends State<GameDemo> {
   }
 }
 
-class TextureImage extends StatelessComponent {
-  TextureImage({
-    Key key,
-    this.texture,
-    this.width: 128.0,
-    this.height: 128.0
-  }) : super(key: key);
+class BottomBar extends StatelessComponent {
 
-  final Texture texture;
-  final double width;
-  final double height;
+  BottomBar({this.onPlay});
+
+  final VoidCallback onPlay;
 
   Widget build(BuildContext context) {
-    return new Container(
-      width: width,
-      height: height,
-      child: new CustomPaint(
-        token: new _TextureImageToken(texture, width, height),
-        onPaint: (PaintingCanvas canvas, Size size) {
-          canvas.save();
-          canvas.scale(size.width / texture.size.width, size.height / texture.size.height);
-          texture.drawTexture(canvas, Point.origin, new Paint());
-          canvas.restore();
-        }
+    return new Stack([
+      new Positioned(
+        left: 18.0,
+        top: 14.0,
+        child: new TextureImage(
+          texture: _spriteSheetUI['level_display.png'],
+          width: 62.0,
+          height: 62.0
+        )
+      ),
+      new Positioned(
+        left: 85.0,
+        top: 14.0,
+        child: new TextureButton(
+          texture: _spriteSheetUI['btn_level_up.png'],
+          width: 30.0,
+          height: 30.0
+        )
+      ),
+      new Positioned(
+        left: 85.0,
+        top: 46.0,
+        child: new TextureButton(
+          texture: _spriteSheetUI['btn_level_down.png'],
+          width: 30.0,
+          height: 30.0
+        )
+      ),
+      new Positioned(
+        left: 120.0,
+        top: 14.0,
+        child: new TextureButton(
+          onPressed: onPlay,
+          texture: _spriteSheetUI['btn_play.png'],
+          label: "PLAY",
+          width: 181.0,
+          height: 62.0
+        )
       )
-    );
-  }
-}
-
-class _TextureImageToken {
-
-  _TextureImageToken(this._texture, this._width, this._height);
-
-  final Texture _texture;
-  final double _width;
-  final double _height;
-
-  bool operator== (other) {
-    return
-      _texture == other._texture &&
-      _width == other._width &&
-      _height == other._height;
-  }
-
-  int get hashCode {
-    int value = 373;
-    value = 37 * value * _texture.hashCode;
-    value = 37 * value * _width.hashCode;
-    value = 37 * value * _height.hashCode;
-    return value;
+    ]);
   }
 }
 
@@ -357,16 +360,7 @@ class TextureButtonState extends State<TextureButton> {
         width: config.width,
         height: config.height,
         child: new CustomPaint(
-          onPaint: paintCallback,
-          token: new _TextureButtonToken(
-            _highlight,
-            config.texture,
-            config.textureDown,
-            config.width,
-            config.height,
-            config.label,
-            config.textStyle
-          )
+          painter: new TextureButtonPainter(config, _highlight)
         )
       ),
       onTapDown: (_) {
@@ -391,11 +385,22 @@ class TextureButtonState extends State<TextureButton> {
   }
 
   void paintCallback(PaintingCanvas canvas, Size size) {
+
+  }
+}
+
+class TextureButtonPainter extends CustomPainter {
+  TextureButtonPainter(this.config, this.highlight);
+
+  final TextureButton config;
+  final bool highlight;
+
+  void paint(Canvas canvas, Size size) {
     if (config.texture == null)
       return;
 
     canvas.save();
-    if (_highlight) {
+    if (highlight) {
       // Draw down state
       if (config.textureDown != null) {
         canvas.scale(size.width / config.textureDown.size.width, size.height / config.textureDown.size.height);
@@ -432,49 +437,15 @@ class TextureButtonState extends State<TextureButton> {
       painter.paint(canvas, new Offset(0.0, size.height / 2.0 - painter.height / 2.0 ));
     }
   }
-}
 
-class _TextureButtonToken {
-  _TextureButtonToken(
-    this._highlight,
-    this._texture,
-    this._textureDown,
-    this._width,
-    this._height,
-    this._label,
-    this._textStyle
-  );
-
-  final bool _highlight;
-  final Texture _texture;
-  final Texture _textureDown;
-  final double _width;
-  final double _height;
-  final String _label;
-  final TextStyle _textStyle;
-
-  bool operator== (other) {
-    return
-      other is _TextureButtonToken &&
-      _highlight == other._highlight &&
-      _texture == other._texture &&
-      _textureDown == other._textureDown &&
-      _width == other._width &&
-      _height == other._height &&
-      _label == other._label &&
-      _textStyle == other._textStyle;
-  }
-
-  int get hashCode {
-    int value = 373;
-    value = 37 * value * _highlight.hashCode;
-    value = 37 * value * _texture.hashCode;
-    value = 37 * value * _textureDown.hashCode;
-    value = 37 * value * _width.hashCode;
-    value = 37 * value * _height.hashCode;
-    value = 37 * value * _textStyle.hashCode;
-    value = 37 * value * _label.hashCode;
-    return value;
+  bool shouldRepaint(TextureButtonPainter oldPainter) {
+    return oldPainter.highlight != highlight
+      || oldPainter.config.texture != config.texture
+      || oldPainter.config.textureDown != config.textureDown
+      || oldPainter.config.textStyle != config.textStyle
+      || oldPainter.config.label != config.label
+      || oldPainter.config.width != config.width
+      || oldPainter.config.height != config.height;
   }
 }
 

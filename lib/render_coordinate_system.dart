@@ -75,8 +75,14 @@ class RenderCoordinateSystem extends RenderProxyBox {
   }
 
   void paint(PaintingContext context, Offset offset) {
-    if (child != null)
-      context.paintChildWithTransform(child, offset.toPoint(), _effectiveTransform);
+    if (child != null) {
+      Matrix4 transform = _effectiveTransform;
+      Offset childOffset = MatrixUtils.getAsTranslation(transform);
+      if (childOffset == null)
+        context.pushTransform(needsCompositing, offset, transform, super.paint);
+      else
+        super.paint(context, offset + childOffset);
+    }
   }
 
   void applyPaintTransform(Matrix4 transform) {
