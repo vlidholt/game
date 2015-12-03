@@ -190,7 +190,7 @@ class GameDemoState extends State<GameDemo> {
       new Positioned(
         left: 18.0,
         top: 14.0,
-        child: new TextureButton(
+        child: new TextureImage(
           texture: _spriteSheetUI['level_display.png'],
           width: 62.0,
           height: 62.0
@@ -269,6 +269,59 @@ class GameDemoState extends State<GameDemo> {
         height: 63.0
       )
     );
+  }
+}
+
+class TextureImage extends StatelessComponent {
+  TextureImage({
+    Key key,
+    this.texture,
+    this.width: 128.0,
+    this.height: 128.0
+  }) : super(key: key);
+
+  final Texture texture;
+  final double width;
+  final double height;
+
+  Widget build(BuildContext context) {
+    return new Container(
+      width: width,
+      height: height,
+      child: new CustomPaint(
+        token: new _TextureImageToken(texture, width, height),
+        onPaint: (PaintingCanvas canvas, Size size) {
+          canvas.save();
+          canvas.scale(size.width / texture.size.width, size.height / texture.size.height);
+          texture.drawTexture(canvas, Point.origin, new Paint());
+          canvas.restore();
+        }
+      )
+    );
+  }
+}
+
+class _TextureImageToken {
+
+  _TextureImageToken(this._texture, this._width, this._height);
+
+  final Texture _texture;
+  final double _width;
+  final double _height;
+
+  bool operator== (other) {
+    return
+      _texture == other._texture &&
+      _width == other._width &&
+      _height == other._height;
+  }
+
+  int get hashCode {
+    int value = 373;
+    value = 37 * value * _texture.hashCode;
+    value = 37 * value * _width.hashCode;
+    value = 37 * value * _height.hashCode;
+    return value;
   }
 }
 
