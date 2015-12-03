@@ -25,7 +25,11 @@ SpriteSheet _spriteSheet;
 SpriteSheet _spriteSheetUI;
 Map<String, SoundEffect> _sounds = <String, SoundEffect>{};
 
+PersistantGameState _gameState = new PersistantGameState();
+
 main() async {
+  activity.setSystemUiVisibility(SystemUiVisibility.IMMERSIVE);
+
   _imageMap = new ImageMap(_bundle);
 
   // Use a list to wait on all loads in parallel just before starting the app.
@@ -105,7 +109,6 @@ class GameDemo extends StatefulComponent {
 
 class GameDemoState extends State<GameDemo> {
   NodeWithSize _game;
-  int _lastScore = 0;
 
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -131,16 +134,16 @@ class GameDemoState extends State<GameDemo> {
         style: new TextStyle(fontSize:20.0),
         child: new Stack(<Widget>[
           new SpriteWidget(new MainScreenBackground(), SpriteBoxTransformMode.fixedWidth),
-          new ScrollableList<String>(
-            items: ["Hey", "ho", "let's", "go"],
-            itemExtent: 50.0,
-            itemBuilder: (BuildContext context, String data, int index) {
-              return new ListItem(
-                key: new Key(data),
-                center: new Text(data)
-              );
-            }
-          ),
+          // new ScrollableList<String>(
+          //   items: ["Hey", "ho", "let's", "go"],
+          //   itemExtent: 50.0,
+          //   itemBuilder: (BuildContext context, String data, int index) {
+          //     return new ListItem(
+          //       key: new Key(data),
+          //       center: new Text(data)
+          //     );
+          //   }
+          // ),
           new Column(<Widget>[
             new SizedBox(
               width: 320.0,
@@ -167,6 +170,9 @@ class GameDemoState extends State<GameDemo> {
 
   Widget _buildCenterArea() {
     return new Column(<Widget>[
+        new Text("Upgrade Laser"),
+        _buildLaserUpgradeButton(),
+        new Text("Upgrade Power-Ups"),
         new Row(<Widget>[
             _buildPowerUpButton(PowerUpType.shield),
             _buildPowerUpButton(PowerUpType.sideLaser),
@@ -219,7 +225,7 @@ class GameDemoState extends State<GameDemo> {
               _spriteSheetUI,
               _sounds,
               (int lastScore) {
-                setState(() { _lastScore = lastScore; });
+                setState(() { _gameState.lastScore = lastScore; });
                 navigatorState.pop();
               }
             );
@@ -236,11 +242,31 @@ class GameDemoState extends State<GameDemo> {
 
   Widget _buildPowerUpButton(PowerUpType type) {
     return new Padding(
-      padding: new EdgeDims.all(5.0),
+      padding: new EdgeDims.all(8.0),
+      child: new Column([
+        new TextureButton(
+          texture: _spriteSheetUI['btn_powerup_${type.index}.png'],
+          width: 57.0,
+          height: 57.0
+        ),
+        new Padding(
+          padding: new EdgeDims.all(5.0),
+          child: new Text(
+            "Lvl ${_gameState.powerupLevel(type) + 1}",
+            style: new TextStyle(fontSize: 15.0)
+          )
+        )
+      ])
+    );
+  }
+
+  Widget _buildLaserUpgradeButton() {
+    return new Padding(
+      padding: new EdgeDims.TRBL(8.0, 0.0, 18.0, 0.0),
       child: new TextureButton(
-        texture: _spriteSheetUI['btn_powerup_${type.index}.png'],
-        width: 57.0,
-        height: 57.0
+        texture: _spriteSheetUI['btn_laser_upgrade.png'],
+        width: 137.0,
+        height: 63.0
       )
     );
   }
