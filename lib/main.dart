@@ -149,7 +149,20 @@ class GameSceneState extends State<GameScene> {
   }
 }
 
-class MainScene extends StatelessComponent {
+class MainScene extends StatefulComponent {
+  State<MainScene> createState() => new MainSceneState();
+}
+
+class MainSceneState extends State<MainScene> {
+
+  TabBarSelection _tabSelection;
+
+  void initState() {
+    super.initState();
+
+    _tabSelection = new TabBarSelection(index: 0);
+  }
+
   Widget build(BuildContext context) {
     return new CoordinateSystem(
       systemSize: new Size(320.0, 320.0),
@@ -164,7 +177,7 @@ class MainScene extends StatelessComponent {
               child: _buildTopBar()
             ),
             new Flexible(
-              child: _buildCenterArea()
+              child: _buildCenterArea(_tabSelection)
             ),
             new SizedBox(
               width: 320.0,
@@ -185,7 +198,18 @@ class MainScene extends StatelessComponent {
     return new Text("Hello");
   }
 
-  Widget _buildCenterArea() {
+  // Widget _buildCenterArea(TabBarSelection selection) {
+  //   return new TabBarView(
+  //     items: <int>[0],
+  //     itemExtent: 320.0,
+  //     selection: selection,
+  //     itemBuilder: (BuildContext context, int item, int index) {
+  //       return new Container(child: _buildUpgradePanel(), width: 310.0, height: 200.0);
+  //     }
+  //   );
+  // }
+
+  Widget _buildCenterArea(TabBarSelection selection) {
     return new Column(<Widget>[
         new Text("Upgrade Laser"),
         _buildLaserUpgradeButton(),
