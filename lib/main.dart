@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:flutter/painting.dart';
 import 'package:flutter/animation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -179,10 +180,6 @@ class GameSceneState extends State<GameScene> {
 
 class MainScene extends StatefulComponent {
   State<MainScene> createState() => new MainSceneState();
-}
-
-class TabBarSelection {
-  TabBarSelection({ int index });
 }
 
 class MainSceneState extends State<MainScene> {
