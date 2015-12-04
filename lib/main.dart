@@ -4,10 +4,11 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/animation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_sprites/flutter_sprites.dart';
 
 import 'game_demo.dart';
@@ -96,12 +97,35 @@ main() async {
   runApp(new GameDemo());
 }
 
-// TODO(viktork): The task bar purple is the wrong purple, we may need
-// a custom theme swatch to match the purples in the sprites.
-final ThemeData _theme = new ThemeData(
-  brightness: ThemeBrightness.light,
-  primarySwatch: Colors.purple
-);
+class GameRoute extends PageRoute {
+  GameRoute(this.child);
+  final Widget child;
+  Duration get transitionDuration => const Duration(milliseconds: 1000);
+  Color get barrierColor => null;
+  Widget buildPage(BuildContext context) => child;
+  Widget buildTransition(BuildContext context, PerformanceView performance, Widget child) {
+    return new FadeTransition(
+      performance: performance,
+      opacity: new AnimatedValue<double>(
+        0.0,
+        end: 1.0,
+        curve: new Interval(0.5, 1.0, curve: Curves.ease)
+      ),
+      child: child
+    );
+  }
+  Widget buildForwardTransition(BuildContext context, PerformanceView performance, Widget child) {
+    return new FadeTransition(
+      performance: performance,
+      opacity: new AnimatedValue<double>(
+        1.0,
+        end: 0.0,
+        curve: new Interval(0.0, 0.5, curve: Curves.ease)
+      ),
+      child: child
+    );
+  }
+}
 
 class GameDemo extends StatefulComponent {
   GameDemoState createState() => new GameDemoState();
@@ -111,13 +135,17 @@ class GameDemoState extends State<GameDemo> {
 
 
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return new Title(
       title: 'Asteroids',
-      theme: _theme,
-      routes: <String, RouteBuilder>{
-        '/': (_) => new MainScene(),
-        '/game': (_) => new GameScene()
-      }
+      color: const Color(0xFF9900FF),
+      child: new Navigator(
+        onGenerateRoute: (NamedRouteSettings settings) {
+          switch (settings.name) {
+            case '/game': return new GameRoute(new GameScene());
+            default:      return new GameRoute(new MainScene());
+          }
+        }
+      )
     );
   }
 }
@@ -151,6 +179,10 @@ class GameSceneState extends State<GameScene> {
 
 class MainScene extends StatefulComponent {
   State<MainScene> createState() => new MainSceneState();
+}
+
+class TabBarSelection {
+  TabBarSelection({ int index });
 }
 
 class MainSceneState extends State<MainScene> {
