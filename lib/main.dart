@@ -209,7 +209,16 @@ class MainSceneState extends State<MainScene> {
               child: _buildTopBar()
             ),
             new Flexible(
-              child: _buildCenterArea(_tabSelection)
+              child: new CenterArea(
+                selection: _tabSelection,
+                onUpgradeLaser: () {
+                  print("Upgrading Laser!");
+                  setState(() {
+                    print("Upgrading Laser (in setState)");
+                    _tabSelection.index = 1;
+                  });
+                }
+              )
             ),
             new SizedBox(
               width: 320.0,
@@ -229,19 +238,34 @@ class MainSceneState extends State<MainScene> {
   Widget _buildTopBar() {
     return new Text("Hello");
   }
+}
 
-  // Widget _buildCenterArea(TabBarSelection selection) {
-  //   return new TabBarView(
-  //     items: <int>[0],
-  //     itemExtent: 320.0,
-  //     selection: selection,
-  //     itemBuilder: (BuildContext context, int item, int index) {
-  //       return new Container(child: _buildUpgradePanel(), width: 310.0, height: 200.0);
-  //     }
-  //   );
-  // }
+class CenterArea extends StatelessComponent {
 
-  Widget _buildCenterArea(TabBarSelection selection) {
+  CenterArea({this.selection, this.onUpgradeLaser});
+
+  final TabBarSelection selection;
+  final VoidCallback onUpgradeLaser;
+
+  Widget build(BuildContext context) {
+    return _buildCenterArea();
+  }
+
+  Widget _buildCenterArea() {
+    return new TabBarView(
+      items: <int>[0, 1],
+      itemExtent: 320.0,
+      selection: selection,
+      itemBuilder: (BuildContext context, int item, int index) {
+        if (item == 0)
+          return _buildUpgradePanel();
+        else if (item == 1)
+          return _buildFriendScorePanel();
+      }
+    );
+  }
+
+  Widget _buildUpgradePanel() {
     return new Column(<Widget>[
         new Text("Upgrade Laser"),
         _buildLaserUpgradeButton(),
@@ -254,8 +278,13 @@ class MainSceneState extends State<MainScene> {
           ],
         justifyContent: FlexJustifyContent.center)
       ],
-      justifyContent: FlexJustifyContent.center
+      justifyContent: FlexJustifyContent.center,
+      key: new Key("upgradePanel")
     );
+  }
+
+  Widget _buildFriendScorePanel() {
+    return new Text("Hello", key: new Key("friendScorePanel"));
   }
 
   Widget _buildPowerUpButton(PowerUpType type) {
@@ -284,7 +313,8 @@ class MainSceneState extends State<MainScene> {
       child: new TextureButton(
         texture: _spriteSheetUI['btn_laser_upgrade.png'],
         width: 137.0,
-        height: 63.0
+        height: 63.0,
+        onPressed: onUpgradeLaser
       )
     );
   }
