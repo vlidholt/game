@@ -5,6 +5,9 @@ assets:
   - assets/starfield.png
   - assets/game_ui.png
   - assets/game_ui.json
+  - assets/ui_bg_top.png
+  - assets/ui_bg_bottom.png
+  - assets/ui_popup.png
   - assets/music_game.mp3
   - assets/music_boss.mp3
   - assets/music_intro.mp3

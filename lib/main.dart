@@ -4,13 +4,17 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/animation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_sprites/flutter_sprites.dart';
 
 import 'game_demo.dart';
+
+typedef void SelectTabCallback(int index);
 
 AssetBundle _initBundle() {
   if (rootBundle != null)
@@ -25,7 +29,11 @@ SpriteSheet _spriteSheet;
 SpriteSheet _spriteSheetUI;
 Map<String, SoundEffect> _sounds = <String, SoundEffect>{};
 
+PersistantGameState _gameState = new PersistantGameState();
+
 main() async {
+  activity.setSystemUiVisibility(SystemUiVisibility.IMMERSIVE);
+
   _imageMap = new ImageMap(_bundle);
 
   // Use a list to wait on all loads in parallel just before starting the app.
@@ -36,6 +44,9 @@ main() async {
     'assets/sprites.png',
     'assets/starfield.png',
     'assets/game_ui.png',
+    'assets/ui_bg_top.png',
+    'assets/ui_bg_bottom.png',
+    'assets/ui_popup.png',
   ]));
 
   // TODO(eseidel): SoundEffect doesn't really do anything except hold a future.
@@ -89,197 +100,350 @@ main() async {
   runApp(new GameDemo());
 }
 
-// TODO(viktork): The task bar purple is the wrong purple, we may need
-// a custom theme swatch to match the purples in the sprites.
-final ThemeData _theme = new ThemeData(
-  brightness: ThemeBrightness.light,
-  primarySwatch: Colors.purple
-);
+class GameRoute extends PageRoute {
+  GameRoute(this.child);
+  final Widget child;
+  Duration get transitionDuration => const Duration(milliseconds: 1000);
+  Color get barrierColor => null;
+  Widget buildPage(BuildContext context) => child;
+  Widget buildTransition(BuildContext context, PerformanceView performance, Widget child) {
+    return new FadeTransition(
+      performance: performance,
+      opacity: new AnimatedValue<double>(
+        0.0,
+        end: 1.0,
+        curve: new Interval(0.5, 1.0, curve: Curves.ease)
+      ),
+      child: child
+    );
+  }
+  Widget buildForwardTransition(BuildContext context, PerformanceView performance, Widget child) {
+    return new FadeTransition(
+      performance: performance,
+      opacity: new AnimatedValue<double>(
+        1.0,
+        end: 0.0,
+        curve: new Interval(0.0, 0.5, curve: Curves.ease)
+      ),
+      child: child
+    );
+  }
+}
 
 class GameDemo extends StatefulComponent {
   GameDemoState createState() => new GameDemoState();
 }
 
 class GameDemoState extends State<GameDemo> {
-  NodeWithSize _game;
-  int _lastScore = 0;
-
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return new Title(
       title: 'Asteroids',
-      theme: _theme,
-      routes: <String, RouteBuilder>{
-        '/': _buildMainScene,
-        '/game': _buildGameScene
+      color: const Color(0xFF9900FF),
+      child: new Navigator(
+        onGenerateRoute: (NamedRouteSettings settings) {
+          switch (settings.name) {
+            case '/game': return new GameRoute(new GameScene());
+            default:      return new GameRoute(new MainScene());
+          }
+        }
+      )
+    );
+  }
+}
+
+class GameScene extends StatefulComponent {
+  State<GameScene> createState() => new GameSceneState();
+}
+
+class GameSceneState extends State<GameScene> {
+  NodeWithSize _game;
+
+  void initState() {
+    super.initState();
+
+    _game = new GameDemoNode(
+      _imageMap,
+      _spriteSheet,
+      _spriteSheetUI,
+      _sounds,
+      (int lastScore) {
+        setState(() { _gameState.lastScore = lastScore; });
+        Navigator.pop(context);
       }
     );
   }
 
-  Widget _buildGameScene(RouteArguments args) {
+  Widget build(BuildContext context) {
     return new SpriteWidget(_game, SpriteBoxTransformMode.fixedWidth);
   }
+}
 
-  Widget _buildMainScene(RouteArguments args) {
-    NavigatorState navigatorState = Navigator.of(args.context);
+class MainScene extends StatefulComponent {
+  State<MainScene> createState() => new MainSceneState();
+}
 
-    return new Stack(<Widget>[
-      new SpriteWidget(new MainScreenBackground(), SpriteBoxTransformMode.fixedWidth),
-      new Column(<Widget>[
-          new TextureButton(
-            onPressed: () {
-              _game = new GameDemoNode(
-                _imageMap,
-                _spriteSheet,
-                _spriteSheetUI,
-                _sounds,
-                (int lastScore) {
-                  setState(() { _lastScore = lastScore; });
-                  navigatorState.pop();
-                }
-              );
-              navigatorState.pushNamed('/game');
-            },
-            texture: _spriteSheetUI['btn_play_up.png'],
-            textureDown: _spriteSheetUI['btn_play_down.png'],
-            width: 128.0,
-            height: 128.0
-          ),
-          new DefaultTextStyle(
-            child: new Text(
-              "Last Score: $_lastScore"
+class MainSceneState extends State<MainScene> {
+
+  TabBarSelection _tabSelection;
+
+  void initState() {
+    super.initState();
+
+    _tabSelection = new TabBarSelection(index: 0);
+  }
+
+  Widget build(BuildContext context) {
+    return new CoordinateSystem(
+      systemSize: new Size(320.0, 320.0),
+      child:new DefaultTextStyle(
+        style: new TextStyle(fontSize:20.0),
+        child: new Stack(<Widget>[
+          new SpriteWidget(new MainScreenBackground(), SpriteBoxTransformMode.fixedWidth),
+          new Column(<Widget>[
+            new SizedBox(
+              width: 320.0,
+              height: 106.0,
+              child: new TopBar(
+                onSelectTab: (int tab) {
+                  setState(() => _tabSelection.index = tab);
+                },
+                selection: _tabSelection
+              )
             ),
-            style: new TextStyle(fontSize:20.0)
+            new Flexible(
+              child: new CenterArea(
+                selection: _tabSelection,
+                onUpgradeLaser: null
+              )
+            ),
+            new SizedBox(
+              width: 320.0,
+              height: 93.0,
+              child: new BottomBar(
+                onPlay: () {
+                  Navigator.pushNamed(context, '/game');
+                }
+              )
+            )
+          ])
+        ])
+      )
+    );
+  }
+}
+
+class TopBar extends StatelessComponent {
+  TopBar({this.selection, this.onSelectTab});
+
+  final TabBarSelection selection;
+  final SelectTabCallback onSelectTab;
+
+  Widget build(BuildContext context) {
+    return new Stack([
+      _buildTabButton("Upgrades", 0),
+      _buildTabButton("Friend Scores", 1),
+      _buildTabButton("World Scores", 2),
+    ]);
+  }
+
+  Widget _buildTabButton(String title, int index) {
+    TextAlign textAlign = TextAlign.center;
+    if (index == 0) textAlign = TextAlign.left;
+    else if (index == 2) textAlign = TextAlign.right;
+
+    TextStyle textStyle = null;
+    if (index == selection.index) {
+      textStyle = new TextStyle(
+        fontWeight: FontWeight.w700,
+        textAlign: textAlign,
+        fontSize: 14.0
+      );
+    } else {
+      textStyle = new TextStyle(
+        fontWeight: FontWeight.w400,
+        textAlign: textAlign,
+        fontSize: 14.0
+      );
+    }
+
+    return new Positioned(
+      left: 10.0 + index * 100.0,
+      top: 56.0,
+      child: new TextureButton(
+        texture: null,
+        textStyle: textStyle,
+        label: title,
+        onPressed: () => onSelectTab(index),
+        width: 100.0,
+        height: 25.0
+      )
+    );
+  }
+}
+
+class CenterArea extends StatelessComponent {
+
+  CenterArea({this.selection, this.onUpgradeLaser});
+
+  final TabBarSelection selection;
+  final VoidCallback onUpgradeLaser;
+
+  Widget build(BuildContext context) {
+    return _buildCenterArea();
+  }
+
+  Widget _buildCenterArea() {
+    return new TabBarView(
+      items: <int>[0, 1, 2],
+      itemExtent: 320.0,
+      selection: selection,
+      itemBuilder: (BuildContext context, int item, int index) {
+        if (item == 0)
+          return _buildUpgradePanel();
+        else if (item == 1)
+          return _buildFriendScorePanel();
+        else if (item == 2)
+          return _buildWorldScorePanel();
+      }
+    );
+  }
+
+  Widget _buildUpgradePanel() {
+    return new Column(<Widget>[
+        new Text("Upgrade Laser"),
+        _buildLaserUpgradeButton(),
+        new Text("Upgrade Power-Ups"),
+        new Row(<Widget>[
+            _buildPowerUpButton(PowerUpType.shield),
+            _buildPowerUpButton(PowerUpType.sideLaser),
+            _buildPowerUpButton(PowerUpType.speedBoost),
+            _buildPowerUpButton(PowerUpType.speedLaser),
+          ],
+        justifyContent: FlexJustifyContent.center)
+      ],
+      justifyContent: FlexJustifyContent.center,
+      key: new Key("upgradePanel")
+    );
+  }
+
+  Widget _buildFriendScorePanel() {
+    return new Text("Friend Scores", key: new Key("friendScorePanel"));
+  }
+
+  Widget _buildWorldScorePanel() {
+    return new Text("World Scores", key: new Key("worldScorePanel"));
+  }
+
+  Widget _buildPowerUpButton(PowerUpType type) {
+    return new Padding(
+      padding: new EdgeDims.all(8.0),
+      child: new Column([
+        new TextureButton(
+          texture: _spriteSheetUI['btn_powerup_${type.index}.png'],
+          width: 57.0,
+          height: 57.0
+        ),
+        new Padding(
+          padding: new EdgeDims.all(5.0),
+          child: new Text(
+            "Lvl ${_gameState.powerupLevel(type) + 1}",
+            style: new TextStyle(fontSize: 15.0)
           )
-        ],
-        justifyContent: FlexJustifyContent.center
+        )
+      ])
+    );
+  }
+
+  Widget _buildLaserUpgradeButton() {
+    return new Padding(
+      padding: new EdgeDims.TRBL(8.0, 0.0, 18.0, 0.0),
+      child: new TextureButton(
+        texture: _spriteSheetUI['btn_laser_upgrade.png'],
+        width: 137.0,
+        height: 63.0,
+        onPressed: onUpgradeLaser
+      )
+    );
+  }
+}
+
+class BottomBar extends StatelessComponent {
+
+  BottomBar({this.onPlay});
+
+  final VoidCallback onPlay;
+
+  Widget build(BuildContext context) {
+    return new Stack([
+      new Positioned(
+        left: 18.0,
+        top: 14.0,
+        child: new TextureImage(
+          texture: _spriteSheetUI['level_display.png'],
+          width: 62.0,
+          height: 62.0
+        )
+      ),
+      new Positioned(
+        left: 85.0,
+        top: 14.0,
+        child: new TextureButton(
+          texture: _spriteSheetUI['btn_level_up.png'],
+          width: 30.0,
+          height: 30.0
+        )
+      ),
+      new Positioned(
+        left: 85.0,
+        top: 46.0,
+        child: new TextureButton(
+          texture: _spriteSheetUI['btn_level_down.png'],
+          width: 30.0,
+          height: 30.0
+        )
+      ),
+      new Positioned(
+        left: 120.0,
+        top: 14.0,
+        child: new TextureButton(
+          onPressed: onPlay,
+          texture: _spriteSheetUI['btn_play.png'],
+          label: "PLAY",
+          width: 181.0,
+          height: 62.0
+        )
       )
     ]);
   }
 }
 
-class TextureButton extends StatefulComponent {
-  TextureButton({
-    Key key,
-    this.onPressed,
-    this.texture,
-    this.textureDown,
-    this.width: 128.0,
-    this.height: 128.0
-  }) : super(key: key);
-
-  final VoidCallback onPressed;
-  final Texture texture;
-  final Texture textureDown;
-  final double width;
-  final double height;
-
-  TextureButtonState createState() => new TextureButtonState();
-}
-
-class TextureButtonState extends State<TextureButton> {
-  bool _highlight = false;
-
-  Widget build(BuildContext context) {
-    return new GestureDetector(
-      child: new Container(
-        width: config.width,
-        height: config.height,
-        child: new CustomPaint(
-          onPaint: paintCallback,
-          token: new _TextureButtonToken(
-            _highlight,
-            config.texture,
-            config.textureDown,
-            config.width,
-            config.height
-          )
-        )
-      ),
-      onTapDown: (_) {
-        SoundEffectPlayer.sharedInstance().play(_sounds["click"]);
-        setState(() {
-          _highlight = true;
-        });
-      },
-      onTap: () {
-        setState(() {
-          _highlight = false;
-        });
-        if (config.onPressed != null)
-          config.onPressed();
-      },
-      onTapCancel: () {
-        setState(() {
-          _highlight = false;
-        });
-      }
-    );
-  }
-
-  void paintCallback(PaintingCanvas canvas, Size size) {
-    if (config.texture == null)
-      return;
-
-    canvas.save();
-    if (_highlight && config.textureDown != null) {
-      // Draw down state
-      canvas.scale(size.width / config.textureDown.size.width, size.height / config.textureDown.size.height);
-      config.textureDown.drawTexture(canvas, Point.origin, new Paint());
-    } else {
-      // Draw up state
-      canvas.scale(size.width / config.texture.size.width, size.height / config.texture.size.height);
-      config.texture.drawTexture(canvas, Point.origin, new Paint());
-    }
-    canvas.restore();
-  }
-}
-
-class _TextureButtonToken {
-  _TextureButtonToken(
-    this._highlight,
-    this._texture,
-    this._textureDown,
-    this._width,
-    this._height
-  );
-
-  final bool _highlight;
-  final Texture _texture;
-  final Texture _textureDown;
-  final double _width;
-  final double _height;
-
-  bool operator== (other) {
-    return
-      other is _TextureButtonToken &&
-      _highlight == other._highlight &&
-      _texture == other._texture &&
-      _textureDown == other._textureDown &&
-      _width == other._width &&
-      _height == other._height;
-  }
-
-  int get hashCode {
-    int value = 373;
-    value = 37 * value * _highlight.hashCode;
-    value = 37 * value * _texture.hashCode;
-    value = 37 * value * _textureDown.hashCode;
-    value = 37 * value * _width.hashCode;
-    value = 37 * value * _height.hashCode;
-    return value;
-  }
-}
-
 class MainScreenBackground extends NodeWithSize {
+  Sprite _bgTop;
+  Sprite _bgBottom;
+
   MainScreenBackground() : super(new Size(320.0, 320.0)) {
     assert(_spriteSheet.image != null);
 
     StarField starField = new StarField(_spriteSheet, 200, true);
     addChild(starField);
+
+    _bgTop = new Sprite.fromImage(_imageMap["assets/ui_bg_top.png"]);
+    _bgTop.pivot = Point.origin;
+    _bgTop.size = new Size(320.0, 108.0);
+    addChild(_bgTop);
+
+    _bgBottom = new Sprite.fromImage(_imageMap["assets/ui_bg_bottom.png"]);
+    _bgBottom.pivot = new Point(0.0, 1.0);
+    _bgBottom.size = new Size(320.0, 97.0);
+    addChild(_bgBottom);
   }
 
   void paint(PaintingCanvas canvas) {
     canvas.drawRect(new Rect.fromLTWH(0.0, 0.0, 320.0, 320.0), new Paint()..color=new Color(0xff000000));
     super.paint(canvas);
+  }
+
+  void spriteBoxPerformedLayout() {
+    _bgBottom.position = new Point(0.0, spriteBox.visibleArea.size.height);
   }
 }
