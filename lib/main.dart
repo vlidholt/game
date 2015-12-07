@@ -14,6 +14,8 @@ import 'package:flutter_sprites/flutter_sprites.dart';
 
 import 'game_demo.dart';
 
+typedef void SelectTabCallback(int index);
+
 AssetBundle _initBundle() {
   if (rootBundle != null)
     return rootBundle;
@@ -133,8 +135,6 @@ class GameDemo extends StatefulComponent {
 }
 
 class GameDemoState extends State<GameDemo> {
-
-
   Widget build(BuildContext context) {
     return new Title(
       title: 'Asteroids',
@@ -203,18 +203,17 @@ class MainSceneState extends State<MainScene> {
             new SizedBox(
               width: 320.0,
               height: 106.0,
-              child: _buildTopBar()
+              child: new TopBar(
+                onSelectTab: (int tab) {
+                  setState(() => _tabSelection.index = tab);
+                },
+                selection: _tabSelection
+              )
             ),
             new Flexible(
               child: new CenterArea(
                 selection: _tabSelection,
-                onUpgradeLaser: () {
-                  print("Upgrading Laser!");
-                  setState(() {
-                    print("Upgrading Laser (in setState)");
-                    _tabSelection.index = 1;
-                  });
-                }
+                onUpgradeLaser: null
               )
             ),
             new SizedBox(
@@ -231,9 +230,54 @@ class MainSceneState extends State<MainScene> {
       )
     );
   }
+}
 
-  Widget _buildTopBar() {
-    return new Text("Hello");
+class TopBar extends StatelessComponent {
+  TopBar({this.selection, this.onSelectTab});
+
+  final TabBarSelection selection;
+  final SelectTabCallback onSelectTab;
+
+  Widget build(BuildContext context) {
+    return new Stack([
+      _buildTabButton("Upgrades", 0),
+      _buildTabButton("Friend Scores", 1),
+      _buildTabButton("World Scores", 2),
+    ]);
+  }
+
+  Widget _buildTabButton(String title, int index) {
+    TextAlign textAlign = TextAlign.center;
+    if (index == 0) textAlign = TextAlign.left;
+    else if (index == 2) textAlign = TextAlign.right;
+
+    TextStyle textStyle = null;
+    if (index == selection.index) {
+      textStyle = new TextStyle(
+        fontWeight: FontWeight.w700,
+        textAlign: textAlign,
+        fontSize: 14.0
+      );
+    } else {
+      textStyle = new TextStyle(
+        fontWeight: FontWeight.w400,
+        textAlign: textAlign,
+        fontSize: 14.0
+      );
+    }
+
+    return new Positioned(
+      left: 10.0 + index * 100.0,
+      top: 56.0,
+      child: new TextureButton(
+        texture: null,
+        textStyle: textStyle,
+        label: title,
+        onPressed: () => onSelectTab(index),
+        width: 100.0,
+        height: 25.0
+      )
+    );
   }
 }
 
@@ -250,7 +294,7 @@ class CenterArea extends StatelessComponent {
 
   Widget _buildCenterArea() {
     return new TabBarView(
-      items: <int>[0, 1],
+      items: <int>[0, 1, 2],
       itemExtent: 320.0,
       selection: selection,
       itemBuilder: (BuildContext context, int item, int index) {
@@ -258,6 +302,8 @@ class CenterArea extends StatelessComponent {
           return _buildUpgradePanel();
         else if (item == 1)
           return _buildFriendScorePanel();
+        else if (item == 2)
+          return _buildWorldScorePanel();
       }
     );
   }
@@ -281,7 +327,11 @@ class CenterArea extends StatelessComponent {
   }
 
   Widget _buildFriendScorePanel() {
-    return new Text("Hello", key: new Key("friendScorePanel"));
+    return new Text("Friend Scores", key: new Key("friendScorePanel"));
+  }
+
+  Widget _buildWorldScorePanel() {
+    return new Text("World Scores", key: new Key("worldScorePanel"));
   }
 
   Widget _buildPowerUpButton(PowerUpType type) {
