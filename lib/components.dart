@@ -98,10 +98,6 @@ class TextureButtonState extends State<TextureButton> {
       }
     );
   }
-
-  void paintCallback(PaintingCanvas canvas, Size size) {
-
-  }
 }
 
 class TextureButtonPainter extends CustomPainter {
@@ -111,29 +107,28 @@ class TextureButtonPainter extends CustomPainter {
   final bool highlight;
 
   void paint(Canvas canvas, Size size) {
-    if (config.texture == null)
-      return;
-
-    canvas.save();
-    if (highlight) {
-      // Draw down state
-      if (config.textureDown != null) {
-        canvas.scale(size.width / config.textureDown.size.width, size.height / config.textureDown.size.height);
-        config.textureDown.drawTexture(canvas, Point.origin, new Paint());
+    if (config.texture != null) {
+      canvas.save();
+      if (highlight) {
+        // Draw down state
+        if (config.textureDown != null) {
+          canvas.scale(size.width / config.textureDown.size.width, size.height / config.textureDown.size.height);
+          config.textureDown.drawTexture(canvas, Point.origin, new Paint());
+        } else {
+          canvas.scale(size.width / config.texture.size.width, size.height / config.texture.size.height);
+          config.texture.drawTexture(
+            canvas,
+            Point.origin,
+            new Paint()..colorFilter = new ColorFilter.mode(new Color(0x66000000), TransferMode.srcATop)
+          );
+        }
       } else {
+        // Draw up state
         canvas.scale(size.width / config.texture.size.width, size.height / config.texture.size.height);
-        config.texture.drawTexture(
-          canvas,
-          Point.origin,
-          new Paint()..colorFilter = new ColorFilter.mode(new Color(0x66000000), TransferMode.srcATop)
-        );
+        config.texture.drawTexture(canvas, Point.origin, new Paint());
       }
-    } else {
-      // Draw up state
-      canvas.scale(size.width / config.texture.size.width, size.height / config.texture.size.height);
-      config.texture.drawTexture(canvas, Point.origin, new Paint());
+      canvas.restore();
     }
-    canvas.restore();
 
     if (config.label != null) {
       TextStyle style;
