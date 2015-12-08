@@ -485,7 +485,7 @@ class ScorePanel extends StatelessComponent {
           )
         )
       ],
-      key: new Key("${key.toString()}_$index")
+      key: new Key("$index")
     );
   }
 }
