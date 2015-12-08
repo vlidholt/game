@@ -21,7 +21,7 @@ setup (follow the directions on the Flutter page).
 Next, clone the game repo to a directory next to your flutter directory. The
 game repo and the flutter repo need to be in the same directory.
 
-    git clone git@github.com:flutter/game.git
+    git clone https://github.com/flutter/game.git
 
 When in the game directory, you can run the game with:
 
