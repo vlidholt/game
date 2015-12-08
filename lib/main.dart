@@ -14,6 +14,8 @@ import 'package:flutter_sprites/flutter_sprites.dart';
 
 import 'game_demo.dart';
 
+final Color _darkTextColor = new Color(0xff3c3f4a);
+
 typedef void SelectTabCallback(int index);
 
 AssetBundle _initBundle() {
@@ -239,10 +241,71 @@ class TopBar extends StatelessComponent {
   final SelectTabCallback onSelectTab;
 
   Widget build(BuildContext context) {
+
+    TextStyle scoreLabelStyle = new TextStyle(
+      fontSize: 18.0,
+      fontWeight: FontWeight.w500,
+      color: _darkTextColor
+    );
+
     return new Stack([
+      new Positioned(
+        left: 10.0,
+        top: 6.0,
+        child: new TextureImage(
+          texture: _spriteSheetUI['player_icon.png'],
+          width: 44.0,
+          height: 44.0
+        )
+      ),
+      new Positioned(
+        left: 64.0,
+        top: 6.0,
+        child: new Text(
+          "Last Score:",
+          style: scoreLabelStyle
+        )
+      ),
+      new Positioned(
+        left: 64.0,
+        top: 28.0,
+        child: new Text(
+          "Weekly Best:",
+          style: scoreLabelStyle
+        )
+      ),
+      new Positioned(
+        right: 10.0,
+        top: 6.0,
+        child: new Text(
+          "123456",
+          style: scoreLabelStyle
+        )
+      ),
       _buildTabButton("Upgrades", 0),
       _buildTabButton("Friend Scores", 1),
       _buildTabButton("World Scores", 2),
+      new Positioned(
+        left: 10.0,
+        top: 87.0,
+        child: new TextureImage(
+          texture: _spriteSheetUI['icn_crystal.png'],
+          width: 12.0,
+          height: 18.0
+        )
+      ),
+      new Positioned(
+        left: 28.0,
+        top: 87.0,
+        child: new Text(
+          "345",
+          style: new TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.w500,
+            color: _darkTextColor
+          )
+        )
+      )
     ]);
   }
 
@@ -256,13 +319,15 @@ class TopBar extends StatelessComponent {
       textStyle = new TextStyle(
         fontWeight: FontWeight.w700,
         textAlign: textAlign,
-        fontSize: 14.0
+        fontSize: 14.0,
+        color: _darkTextColor
       );
     } else {
       textStyle = new TextStyle(
         fontWeight: FontWeight.w400,
         textAlign: textAlign,
-        fontSize: 14.0
+        fontSize: 14.0,
+        color: _darkTextColor
       );
     }
 
@@ -388,7 +453,7 @@ class ScorePanel extends StatelessComponent {
           top: 0.0,
           child: new Container(
             width: 320.0,
-            height: 59.0,
+            height: 63.0,
             foregroundDecoration: new BoxDecoration(
               backgroundColor: new Color(0x33000000)
             )
@@ -478,12 +543,22 @@ class BottomBar extends StatelessComponent {
 class MainScreenBackground extends NodeWithSize {
   Sprite _bgTop;
   Sprite _bgBottom;
+  RepeatedImage _background;
+  RepeatedImage _nebula;
 
   MainScreenBackground() : super(new Size(320.0, 320.0)) {
     assert(_spriteSheet.image != null);
 
+    // Add background
+    _background = new RepeatedImage(_imageMap["assets/starfield.png"]);
+    addChild(_background);
+
     StarField starField = new StarField(_spriteSheet, 200, true);
     addChild(starField);
+
+    // Add nebula
+    _nebula = new RepeatedImage(_imageMap["assets/nebula.png"], TransferMode.plus);
+    addChild(_nebula);
 
     _bgTop = new Sprite.fromImage(_imageMap["assets/ui_bg_top.png"]);
     _bgTop.pivot = Point.origin;
@@ -503,5 +578,10 @@ class MainScreenBackground extends NodeWithSize {
 
   void spriteBoxPerformedLayout() {
     _bgBottom.position = new Point(0.0, spriteBox.visibleArea.size.height);
+  }
+
+  void update(double dt) {
+    _background.move(10.0 * dt);
+    _nebula.move(100.0 * dt);
   }
 }
