@@ -12,7 +12,7 @@ class PowerBar extends NodeWithSize {
     ..strokeWidth = 1.0
     ..style = ui.PaintingStyle.stroke;
 
-  void paint(PaintingCanvas canvas) {
+  void paint(Canvas canvas) {
     applyTransformForPivot(canvas);
 
     canvas.drawRect(new Rect.fromLTRB(0.0, 0.0, size.width - 0.0, size.height - 0.0), _paintOutline);

@@ -105,7 +105,7 @@ class GameRoute extends PageRoute {
   final Widget child;
   Duration get transitionDuration => const Duration(milliseconds: 1000);
   Color get barrierColor => null;
-  Widget buildPage(BuildContext context) => child;
+  Widget buildPage(BuildContext context, PerformanceView performance, PerformanceView forwardPerformance) => child;
   Widget buildTransition(BuildContext context, PerformanceView performance, Widget child) {
     return new FadeTransition(
       performance: performance,
@@ -496,7 +496,7 @@ class MainScreenBackground extends NodeWithSize {
     addChild(_bgBottom);
   }
 
-  void paint(PaintingCanvas canvas) {
+  void paint(Canvas canvas) {
     canvas.drawRect(new Rect.fromLTWH(0.0, 0.0, 320.0, 320.0), new Paint()..color=new Color(0xff000000));
     super.paint(canvas);
   }

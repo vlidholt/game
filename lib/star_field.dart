@@ -46,7 +46,7 @@ class StarField extends NodeWithSize {
     addStars();
   }
 
-  void paint(PaintingCanvas canvas) {
+  void paint(Canvas canvas) {
     // Create a transform for each star
     List<ui.RSTransform> transforms = <ui.RSTransform>[];
     for (int i = 0; i < _numStars; i++) {

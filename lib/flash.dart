@@ -11,7 +11,7 @@ class Flash extends NodeWithSize {
   double _opacity = 1.0;
   Paint _cachedPaint = new Paint();
 
-  void paint(PaintingCanvas canvas) {
+  void paint(Canvas canvas) {
     // Update the color
     _cachedPaint.color = new Color.fromARGB((255.0 * _opacity).toInt(),
                                             255, 255, 255);

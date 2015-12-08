@@ -75,7 +75,7 @@ abstract class GameObject extends Node {
     return null;
   }
 
-  void paint(PaintingCanvas canvas) {
+  void paint(Canvas canvas) {
     if (_drawDebug) {
       canvas.drawCircle(Point.origin, radius, _paintDebug);
     }
