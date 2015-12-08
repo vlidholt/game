@@ -202,7 +202,7 @@ class MainSceneState extends State<MainScene> {
           new Column(<Widget>[
             new SizedBox(
               width: 320.0,
-              height: 106.0,
+              height: 108.0,
               child: new TopBar(
                 onSelectTab: (int tab) {
                   setState(() => _tabSelection.index = tab);
@@ -327,11 +327,11 @@ class CenterArea extends StatelessComponent {
   }
 
   Widget _buildFriendScorePanel() {
-    return new Text("Friend Scores", key: new Key("friendScorePanel"));
+    return new ScorePanel(key: new Key("friendScorePanel"));
   }
 
   Widget _buildWorldScorePanel() {
-    return new Text("World Scores", key: new Key("worldScorePanel"));
+    return new ScorePanel(key: new Key("worldScorePanel"));
   }
 
   Widget _buildPowerUpButton(PowerUpType type) {
@@ -363,6 +363,64 @@ class CenterArea extends StatelessComponent {
         height: 63.0,
         onPressed: onUpgradeLaser
       )
+    );
+  }
+}
+
+class ScorePanel extends StatelessComponent {
+  ScorePanel({
+    Key key
+  }) : super(key: key);
+
+  Widget build(BuildContext context) {
+    return new ScrollableList<int>(
+      items: <int>[0, 1, 2],
+      itemBuilder: _itemBuilder,
+      itemExtent: 64.0
+    );
+  }
+
+  Widget _itemBuilder(BuildContext context, int item, int index) {
+    return new Stack(
+      [
+        new Positioned(
+          left: 0.0,
+          top: 0.0,
+          child: new Container(
+            width: 320.0,
+            height: 59.0,
+            foregroundDecoration: new BoxDecoration(
+              backgroundColor: new Color(0x33000000)
+            )
+          )
+        ),
+        new Positioned(
+          left: 10.0,
+          top: 10.0,
+          child: new TextureImage(
+            texture: _spriteSheetUI['player_icon.png'],
+            width: 44.0,
+            height: 44.0
+          )
+        ),
+        new Positioned(
+          left: 70.0,
+          top: 12.0,
+          child: new Text(
+            "Player Name $index",
+            style: new TextStyle(fontSize: 18.0)
+          )
+        ),
+        new Positioned(
+          left: 70.0,
+          bottom: 12.0,
+          child: new Text(
+            "${(index + 1) * 25428}",
+            style: new TextStyle(fontSize: 16.0)
+          )
+        )
+      ],
+      key: new Key("${key.toString()}_$index")
     );
   }
 }
