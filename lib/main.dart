@@ -31,8 +31,6 @@ SpriteSheet _spriteSheet;
 SpriteSheet _spriteSheetUI;
 Map<String, SoundEffect> _sounds = <String, SoundEffect>{};
 
-PersistantGameState _gameState = new PersistantGameState();
-
 main() async {
   activity.setSystemUiVisibility(SystemUiVisibility.IMMERSIVE);
 
@@ -137,6 +135,14 @@ class GameDemo extends StatefulComponent {
 }
 
 class GameDemoState extends State<GameDemo> {
+  PersistantGameState _gameState;
+
+  void initState() {
+    super.initState();
+
+    _gameState = new PersistantGameState();
+  }
+
   Widget build(BuildContext context) {
     return new Title(
       title: 'Asteroids',
@@ -144,16 +150,35 @@ class GameDemoState extends State<GameDemo> {
       child: new Navigator(
         onGenerateRoute: (NamedRouteSettings settings) {
           switch (settings.name) {
-            case '/game': return new GameRoute(new GameScene());
-            default:      return new GameRoute(new MainScene());
+            case '/game': return new GameRoute(
+              new GameScene(
+                onGameOver: updateGameStateOnGameOver
+              )
+            );
+            default: return new GameRoute(
+              new MainScene(
+                gameState: _gameState
+              )
+            );
           }
         }
       )
     );
   }
+
+  void updateGameStateOnGameOver(int lastScore, int coins) {
+    setState(() {
+      _gameState.lastScore = lastScore;
+      _gameState.coins += coins;
+    });
+  }
 }
 
 class GameScene extends StatefulComponent {
+  GameScene({this.onGameOver});
+
+  final GameOverCallback onGameOver;
+
   State<GameScene> createState() => new GameSceneState();
 }
 
@@ -168,9 +193,9 @@ class GameSceneState extends State<GameScene> {
       _spriteSheet,
       _spriteSheetUI,
       _sounds,
-      (int lastScore) {
-        setState(() { _gameState.lastScore = lastScore; });
+      (int score, int coins) {
         Navigator.pop(context);
+        config.onGameOver(score, coins);
       }
     );
   }
@@ -181,6 +206,10 @@ class GameSceneState extends State<GameScene> {
 }
 
 class MainScene extends StatefulComponent {
+  MainScene({this.gameState});
+
+  final PersistantGameState gameState;
+
   State<MainScene> createState() => new MainSceneState();
 }
 
@@ -209,13 +238,15 @@ class MainSceneState extends State<MainScene> {
                 onSelectTab: (int tab) {
                   setState(() => _tabSelection.index = tab);
                 },
-                selection: _tabSelection
+                selection: _tabSelection,
+                gameState: config.gameState
               )
             ),
             new Flexible(
               child: new CenterArea(
                 selection: _tabSelection,
-                onUpgradeLaser: null
+                onUpgradeLaser: null,
+                gameState: config.gameState
               )
             ),
             new SizedBox(
@@ -235,10 +266,11 @@ class MainSceneState extends State<MainScene> {
 }
 
 class TopBar extends StatelessComponent {
-  TopBar({this.selection, this.onSelectTab});
+  TopBar({this.selection, this.onSelectTab, this.gameState});
 
   final TabBarSelection selection;
   final SelectTabCallback onSelectTab;
+  final PersistantGameState gameState;
 
   Widget build(BuildContext context) {
 
@@ -278,7 +310,15 @@ class TopBar extends StatelessComponent {
         right: 10.0,
         top: 6.0,
         child: new Text(
-          "123456",
+          "${gameState.lastScore}",
+          style: scoreLabelStyle
+        )
+      ),
+      new Positioned(
+        right: 10.0,
+        top: 28.0,
+        child: new Text(
+          "${gameState.weeklyBestScore}",
           style: scoreLabelStyle
         )
       ),
@@ -298,7 +338,7 @@ class TopBar extends StatelessComponent {
         left: 28.0,
         top: 87.0,
         child: new Text(
-          "345",
+          "${gameState.coins}",
           style: new TextStyle(
             fontSize: 16.0,
             fontWeight: FontWeight.w500,
@@ -348,10 +388,11 @@ class TopBar extends StatelessComponent {
 
 class CenterArea extends StatelessComponent {
 
-  CenterArea({this.selection, this.onUpgradeLaser});
+  CenterArea({this.selection, this.onUpgradeLaser, this.gameState});
 
   final TabBarSelection selection;
   final VoidCallback onUpgradeLaser;
+  final PersistantGameState gameState;
 
   Widget build(BuildContext context) {
     return _buildCenterArea();
@@ -411,7 +452,7 @@ class CenterArea extends StatelessComponent {
         new Padding(
           padding: new EdgeDims.all(5.0),
           child: new Text(
-            "Lvl ${_gameState.powerupLevel(type) + 1}",
+            "Lvl ${gameState.powerupLevel(type) + 1}",
             style: new TextStyle(fontSize: 15.0)
           )
         )
