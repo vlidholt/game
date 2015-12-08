@@ -10,5 +10,15 @@ class PersistantGameState {
   int currentStartingLevel = 0;
   int maxStartingLevel = 0;
 
-  int lastScore;
+  int _lastScore = 0;
+
+  int get lastScore => _lastScore;
+
+  set lastScore(int lastScore) {
+    _lastScore = lastScore;
+    if (lastScore > weeklyBestScore)
+      weeklyBestScore = lastScore;
+  }
+
+  int weeklyBestScore = 0;
 }

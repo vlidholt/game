@@ -8,7 +8,7 @@ final int _chunksPerLevel = 9;
 
 final bool _drawDebug = false;
 
-typedef void GameOverCallback(int score);
+typedef void GameOverCallback(int score, int coins);
 
 class GameDemoNode extends NodeWithSize {
 
@@ -259,7 +259,7 @@ class GameDemoNode extends NodeWithSize {
     _gameOver = true;
 
     // Return to main scene and report the score back in 2 seconds
-    new Timer(new Duration(seconds: 2), () { _gameOverCallback(_playerState.score); });
+    new Timer(new Duration(seconds: 2), () { _gameOverCallback(_playerState.score, _playerState.coins); });
   }
 }
 
