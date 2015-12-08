@@ -14,6 +14,8 @@ import 'package:flutter_sprites/flutter_sprites.dart';
 
 import 'game_demo.dart';
 
+final Color _darkTextColor = new Color(0xff3c3f4a);
+
 typedef void SelectTabCallback(int index);
 
 AssetBundle _initBundle() {
@@ -239,10 +241,71 @@ class TopBar extends StatelessComponent {
   final SelectTabCallback onSelectTab;
 
   Widget build(BuildContext context) {
+
+    TextStyle scoreLabelStyle = new TextStyle(
+      fontSize: 18.0,
+      fontWeight: FontWeight.w500,
+      color: _darkTextColor
+    );
+
     return new Stack([
+      new Positioned(
+        left: 10.0,
+        top: 6.0,
+        child: new TextureImage(
+          texture: _spriteSheetUI['player_icon.png'],
+          width: 44.0,
+          height: 44.0
+        )
+      ),
+      new Positioned(
+        left: 64.0,
+        top: 6.0,
+        child: new Text(
+          "Last Score:",
+          style: scoreLabelStyle
+        )
+      ),
+      new Positioned(
+        left: 64.0,
+        top: 28.0,
+        child: new Text(
+          "Weekly Best:",
+          style: scoreLabelStyle
+        )
+      ),
+      new Positioned(
+        right: 10.0,
+        top: 6.0,
+        child: new Text(
+          "123456",
+          style: scoreLabelStyle
+        )
+      ),
       _buildTabButton("Upgrades", 0),
       _buildTabButton("Friend Scores", 1),
       _buildTabButton("World Scores", 2),
+      new Positioned(
+        left: 10.0,
+        top: 87.0,
+        child: new TextureImage(
+          texture: _spriteSheetUI['icn_crystal.png'],
+          width: 12.0,
+          height: 18.0
+        )
+      ),
+      new Positioned(
+        left: 28.0,
+        top: 87.0,
+        child: new Text(
+          "345",
+          style: new TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.w500,
+            color: _darkTextColor
+          )
+        )
+      )
     ]);
   }
 
@@ -256,13 +319,15 @@ class TopBar extends StatelessComponent {
       textStyle = new TextStyle(
         fontWeight: FontWeight.w700,
         textAlign: textAlign,
-        fontSize: 14.0
+        fontSize: 14.0,
+        color: _darkTextColor
       );
     } else {
       textStyle = new TextStyle(
         fontWeight: FontWeight.w400,
         textAlign: textAlign,
-        fontSize: 14.0
+        fontSize: 14.0,
+        color: _darkTextColor
       );
     }
 
