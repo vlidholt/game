@@ -453,7 +453,7 @@ class ScorePanel extends StatelessComponent {
           top: 0.0,
           child: new Container(
             width: 320.0,
-            height: 59.0,
+            height: 63.0,
             foregroundDecoration: new BoxDecoration(
               backgroundColor: new Color(0x33000000)
             )
@@ -543,12 +543,22 @@ class BottomBar extends StatelessComponent {
 class MainScreenBackground extends NodeWithSize {
   Sprite _bgTop;
   Sprite _bgBottom;
+  RepeatedImage _background;
+  RepeatedImage _nebula;
 
   MainScreenBackground() : super(new Size(320.0, 320.0)) {
     assert(_spriteSheet.image != null);
 
+    // Add background
+    _background = new RepeatedImage(_imageMap["assets/starfield.png"]);
+    addChild(_background);
+
     StarField starField = new StarField(_spriteSheet, 200, true);
     addChild(starField);
+
+    // Add nebula
+    _nebula = new RepeatedImage(_imageMap["assets/nebula.png"], TransferMode.plus);
+    addChild(_nebula);
 
     _bgTop = new Sprite.fromImage(_imageMap["assets/ui_bg_top.png"]);
     _bgTop.pivot = Point.origin;
@@ -568,5 +578,10 @@ class MainScreenBackground extends NodeWithSize {
 
   void spriteBoxPerformedLayout() {
     _bgBottom.position = new Point(0.0, spriteBox.visibleArea.size.height);
+  }
+
+  void update(double dt) {
+    _background.move(10.0 * dt);
+    _nebula.move(100.0 * dt);
   }
 }
