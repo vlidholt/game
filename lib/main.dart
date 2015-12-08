@@ -152,7 +152,8 @@ class GameDemoState extends State<GameDemo> {
           switch (settings.name) {
             case '/game': return new GameRoute(
               new GameScene(
-                onGameOver: updateGameStateOnGameOver
+                onGameOver: updateGameStateOnGameOver,
+                gameState: _gameState
               )
             );
             default: return new GameRoute(
@@ -175,9 +176,10 @@ class GameDemoState extends State<GameDemo> {
 }
 
 class GameScene extends StatefulComponent {
-  GameScene({this.onGameOver});
+  GameScene({this.onGameOver, this.gameState});
 
   final GameOverCallback onGameOver;
+  final PersistantGameState gameState;
 
   State<GameScene> createState() => new GameSceneState();
 }
@@ -193,6 +195,7 @@ class GameSceneState extends State<GameScene> {
       _spriteSheet,
       _spriteSheetUI,
       _sounds,
+      config.gameState,
       (int score, int coins) {
         Navigator.pop(context);
         config.onGameOver(score, coins);
@@ -447,7 +450,14 @@ class CenterArea extends StatelessComponent {
         new TextureButton(
           texture: _spriteSheetUI['btn_powerup_${type.index}.png'],
           width: 57.0,
-          height: 57.0
+          height: 57.0,
+          label: "${gameState.powerUpUpgradePrice(type)}",
+          labelOffset: new Offset(0.0, 19.0),
+          textStyle: new TextStyle(
+            fontSize: 13.0,
+            textAlign: TextAlign.center,
+            color: _darkTextColor
+          )
         ),
         new Padding(
           padding: new EdgeDims.all(5.0),

@@ -17,6 +17,7 @@ class GameDemoNode extends NodeWithSize {
     this._spritesGame,
     this._spritesUI,
     this._sounds,
+    this._gameState,
     this._gameOverCallback
   ): super(new Size(320.0, 320.0)) {
     // Add background
@@ -41,7 +42,7 @@ class GameDemoNode extends NodeWithSize {
     _gameScreen.addChild(_level);
 
     // Add heads up display
-    _playerState = new PlayerState(_spritesUI, _spritesGame);
+    _playerState = new PlayerState(_spritesUI, _spritesGame, _gameState);
     addChild(_playerState);
 
     _objectFactory = new GameObjectFactory(_spritesGame, _sounds, _level, _playerState);
@@ -57,6 +58,8 @@ class GameDemoNode extends NodeWithSize {
     // Add initial game objects
     addObjects();
   }
+
+  final PersistantGameState _gameState;
 
   // Resources
   ImageMap _images;

@@ -53,7 +53,8 @@ class TextureButton extends StatefulComponent {
     this.width: 128.0,
     this.height: 128.0,
     this.label,
-    this.textStyle
+    this.textStyle,
+    this.labelOffset: Offset.zero
   }) : super(key: key);
 
   final VoidCallback onPressed;
@@ -63,6 +64,7 @@ class TextureButton extends StatefulComponent {
   final String label;
   final double width;
   final double height;
+  final Offset labelOffset;
 
   TextureButtonState createState() => new TextureButtonState();
 }
@@ -144,7 +146,7 @@ class TextureButtonPainter extends CustomPainter {
       painter.maxWidth = size.width;
       painter.minWidth = 0.0;
       painter.layout();
-      painter.paint(canvas, new Offset(0.0, size.height / 2.0 - painter.height / 2.0 ));
+      painter.paint(canvas, new Offset(0.0, size.height / 2.0 - painter.height / 2.0 ) + config.labelOffset);
     }
   }
 

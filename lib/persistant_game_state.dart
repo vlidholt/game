@@ -21,4 +21,19 @@ class PersistantGameState {
   }
 
   int weeklyBestScore = 0;
+
+
+  int powerUpUpgradePrice(PowerUpType type) {
+    int level = powerupLevel(type) + 1;
+    return level * 50 + 50;
+  }
+
+  int powerUpFrames(PowerUpType type) {
+    int level = powerupLevel(type);
+    
+    if (type == PowerUpType.speedBoost)
+      return 150 + 25 * level;
+    else
+      return 300 + 50 * level;
+  }
 }

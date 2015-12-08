@@ -1,7 +1,7 @@
 part of game;
 
 class PlayerState extends Node {
-  PlayerState(this._sheetUI, this._sheetGame) {
+  PlayerState(this._sheetUI, this._sheetGame, this._gameState) {
     // Score display
     _spriteBackgroundScore = new Sprite(_sheetUI["scoreboard.png"]);
     _spriteBackgroundScore.pivot = new Point(1.0, 0.0);
@@ -27,6 +27,7 @@ class PlayerState extends Node {
 
   final SpriteSheet _sheetUI;
   final SpriteSheet _sheetGame;
+  final PersistantGameState _gameState;
 
   int laserLevel = 0;
 
@@ -83,13 +84,13 @@ class PlayerState extends Node {
 
   void activatePowerUp(PowerUpType type) {
     if (type == PowerUpType.shield) {
-      _shieldFrames += 300;
+      _shieldFrames += _gameState.powerUpFrames(type);
     } else if (type == PowerUpType.sideLaser) {
-      _sideLaserFrames += 300;
+      _sideLaserFrames += _gameState.powerUpFrames(type);
     } else if (type == PowerUpType.speedLaser) {
-      _speedLaserFrames += 300;
+      _speedLaserFrames += _gameState.powerUpFrames(type);
     } else if (type == PowerUpType.speedBoost) {
-      _speedBoostFrames += 150;
+      _speedBoostFrames += _gameState.powerUpFrames(type);
     }
   }
 
