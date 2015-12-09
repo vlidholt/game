@@ -9,8 +9,17 @@ class PersistantGameState {
     return _powerupLevels[type.index];
   }
 
-  int currentStartingLevel = 0;
-  int maxStartingLevel = 0;
+  int _currentStartingLevel = 0;
+
+  int get currentStartingLevel => _currentStartingLevel;
+
+  set currentStartingLevel(int currentStartingLevel) {
+    if (currentStartingLevel >= 0
+      && currentStartingLevel <= maxStartingLevel)
+      _currentStartingLevel = currentStartingLevel;
+  }
+
+  int maxStartingLevel = 8;
 
   int laserLevel = 0;
 

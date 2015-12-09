@@ -188,6 +188,16 @@ class GameDemoState extends State<GameDemo> {
           setState(() {
             _gameState.upgradeLaser();
           });
+        },
+        onStartLevelUp: () {
+          setState(() {
+            _gameState.currentStartingLevel++;
+          });
+        },
+        onStartLevelDown: () {
+          setState(() {
+            _gameState.currentStartingLevel--;
+          });
         }
       );
     });
@@ -228,11 +238,19 @@ class GameSceneState extends State<GameScene> {
 }
 
 class MainScene extends StatefulComponent {
-  MainScene({this.gameState, this.onUpgradePowerUp, this.onUpgradeLaser});
+  MainScene({
+    this.gameState,
+    this.onUpgradePowerUp,
+    this.onUpgradeLaser,
+    this.onStartLevelUp,
+    this.onStartLevelDown
+  });
 
   final PersistantGameState gameState;
   final UpgradePowerUpCallback onUpgradePowerUp;
   final VoidCallback onUpgradeLaser;
+  final VoidCallback onStartLevelUp;
+  final VoidCallback onStartLevelDown;
 
   State<MainScene> createState() => new MainSceneState();
 }
@@ -280,7 +298,10 @@ class MainSceneState extends State<MainScene> {
               child: new BottomBar(
                 onPlay: () {
                   Navigator.pushNamed(context, '/game');
-                }
+                },
+                onStartLevelUp: config.onStartLevelUp,
+                onStartLevelDown: config.onStartLevelDown,
+                gameState: config.gameState
               )
             )
           ])
@@ -579,9 +600,12 @@ class ScorePanel extends StatelessComponent {
 
 class BottomBar extends StatelessComponent {
 
-  BottomBar({this.onPlay});
+  BottomBar({this.onPlay, this.gameState, this.onStartLevelUp, this.onStartLevelDown});
 
   final VoidCallback onPlay;
+  final VoidCallback onStartLevelUp;
+  final VoidCallback onStartLevelDown;
+  final PersistantGameState gameState;
 
   Widget build(BuildContext context) {
     return new Stack([
@@ -595,12 +619,22 @@ class BottomBar extends StatelessComponent {
         )
       ),
       new Positioned(
+        left: 18.0,
+        top: 14.0,
+        child: new TextureImage(
+          texture: _spriteSheetUI['level_display_${gameState.currentStartingLevel + 1}.png'],
+          width: 62.0,
+          height: 62.0
+        )
+      ),
+      new Positioned(
         left: 85.0,
         top: 14.0,
         child: new TextureButton(
           texture: _spriteSheetUI['btn_level_up.png'],
           width: 30.0,
-          height: 30.0
+          height: 30.0,
+          onPressed: onStartLevelUp
         )
       ),
       new Positioned(
@@ -609,7 +643,8 @@ class BottomBar extends StatelessComponent {
         child: new TextureButton(
           texture: _spriteSheetUI['btn_level_down.png'],
           width: 30.0,
-          height: 30.0
+          height: 30.0,
+          onPressed: onStartLevelDown
         )
       ),
       new Positioned(
