@@ -153,38 +153,38 @@ class GameDemoState extends State<GameDemo> {
       child: new Navigator(
         onGenerateRoute: (NamedRouteSettings settings) {
           switch (settings.name) {
-            case '/game':
-              return new GameRoute((BuildContext context) {
-                  return new GameScene(
-                    onGameOver: updateGameStateOnGameOver,
-                    gameState: _gameState
-                  );
-                }
-              );
-            default:
-                return new GameRoute((BuildContext context) {
-
-                    return new MainScene(
-                      gameState: _gameState,
-                      onUpgradePowerUp: (PowerUpType type) {
-                        setState(() {
-                          _gameState.upgradePowerUp(type);
-                        });
-                      }
-
-                  );
-                }
-              );
+            case '/game': return _buildGameSceneRoute();
+            default: return _buildMainSceneRoute();
           }
         }
       )
     );
   }
 
-  void updateGameStateOnGameOver(int lastScore, int coins) {
-    setState(() {
-      _gameState.lastScore = lastScore;
-      _gameState.coins += coins;
+  GameRoute _buildGameSceneRoute() {
+    return new GameRoute((BuildContext context) {
+      return new GameScene(
+        onGameOver: (int lastScore, int coins) {
+          setState(() {
+            _gameState.lastScore = lastScore;
+            _gameState.coins += coins;
+          });
+        },
+        gameState: _gameState
+      );
+    });
+  }
+
+  GameRoute _buildMainSceneRoute() {
+    return new GameRoute((BuildContext context) {
+      return new MainScene(
+        gameState: _gameState,
+        onUpgradePowerUp: (PowerUpType type) {
+          setState(() {
+            _gameState.upgradePowerUp(type);
+          });
+        }
+      );
     });
   }
 }
