@@ -17,6 +17,7 @@ import 'game_demo.dart';
 final Color _darkTextColor = new Color(0xff3c3f4a);
 
 typedef void SelectTabCallback(int index);
+typedef void UpgradePowerUpCallback(PowerUpType type);
 
 AssetBundle _initBundle() {
   if (rootBundle != null)
@@ -101,11 +102,13 @@ main() async {
 }
 
 class GameRoute extends PageRoute {
-  GameRoute(this.child);
-  final Widget child;
+  GameRoute(this.builder);
+  final WidgetBuilder builder;
   Duration get transitionDuration => const Duration(milliseconds: 1000);
   Color get barrierColor => null;
-  Widget buildPage(BuildContext context, PerformanceView performance, PerformanceView forwardPerformance) => child;
+  Widget buildPage(BuildContext context, PerformanceView performance, PerformanceView forwardPerformance) {
+    return builder(context);
+  }
   Widget buildTransition(BuildContext context, PerformanceView performance, Widget child) {
     return new FadeTransition(
       performance: performance,
@@ -150,27 +153,38 @@ class GameDemoState extends State<GameDemo> {
       child: new Navigator(
         onGenerateRoute: (NamedRouteSettings settings) {
           switch (settings.name) {
-            case '/game': return new GameRoute(
-              new GameScene(
-                onGameOver: updateGameStateOnGameOver,
-                gameState: _gameState
-              )
-            );
-            default: return new GameRoute(
-              new MainScene(
-                gameState: _gameState
-              )
-            );
+            case '/game': return _buildGameSceneRoute();
+            default: return _buildMainSceneRoute();
           }
         }
       )
     );
   }
 
-  void updateGameStateOnGameOver(int lastScore, int coins) {
-    setState(() {
-      _gameState.lastScore = lastScore;
-      _gameState.coins += coins;
+  GameRoute _buildGameSceneRoute() {
+    return new GameRoute((BuildContext context) {
+      return new GameScene(
+        onGameOver: (int lastScore, int coins) {
+          setState(() {
+            _gameState.lastScore = lastScore;
+            _gameState.coins += coins;
+          });
+        },
+        gameState: _gameState
+      );
+    });
+  }
+
+  GameRoute _buildMainSceneRoute() {
+    return new GameRoute((BuildContext context) {
+      return new MainScene(
+        gameState: _gameState,
+        onUpgradePowerUp: (PowerUpType type) {
+          setState(() {
+            _gameState.upgradePowerUp(type);
+          });
+        }
+      );
     });
   }
 }
@@ -209,9 +223,10 @@ class GameSceneState extends State<GameScene> {
 }
 
 class MainScene extends StatefulComponent {
-  MainScene({this.gameState});
+  MainScene({this.gameState, this.onUpgradePowerUp});
 
   final PersistantGameState gameState;
+  final UpgradePowerUpCallback onUpgradePowerUp;
 
   State<MainScene> createState() => new MainSceneState();
 }
@@ -249,6 +264,7 @@ class MainSceneState extends State<MainScene> {
               child: new CenterArea(
                 selection: _tabSelection,
                 onUpgradeLaser: null,
+                onUpgradePowerUp: config.onUpgradePowerUp,
                 gameState: config.gameState
               )
             ),
@@ -269,6 +285,8 @@ class MainSceneState extends State<MainScene> {
 }
 
 class TopBar extends StatelessComponent {
+
+
   TopBar({this.selection, this.onSelectTab, this.gameState});
 
   final TabBarSelection selection;
@@ -391,10 +409,16 @@ class TopBar extends StatelessComponent {
 
 class CenterArea extends StatelessComponent {
 
-  CenterArea({this.selection, this.onUpgradeLaser, this.gameState});
+  CenterArea({
+    this.selection,
+    this.onUpgradeLaser,
+    this.gameState,
+    this.onUpgradePowerUp
+  });
 
   final TabBarSelection selection;
   final VoidCallback onUpgradeLaser;
+  final UpgradePowerUpCallback onUpgradePowerUp;
   final PersistantGameState gameState;
 
   Widget build(BuildContext context) {
@@ -457,7 +481,8 @@ class CenterArea extends StatelessComponent {
             fontSize: 13.0,
             textAlign: TextAlign.center,
             color: _darkTextColor
-          )
+          ),
+          onPressed: () => onUpgradePowerUp(type)
         ),
         new Padding(
           padding: new EdgeDims.all(5.0),
