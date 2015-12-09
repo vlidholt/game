@@ -247,7 +247,7 @@ class MainSceneState extends State<MainScene> {
       child:new DefaultTextStyle(
         style: new TextStyle(fontSize:20.0),
         child: new Stack(<Widget>[
-          new SpriteWidget(new MainScreenBackground(), SpriteBoxTransformMode.fixedWidth),
+          new MainSceneBackground(),
           new Column(<Widget>[
             new SizedBox(
               width: 320.0,
@@ -285,8 +285,6 @@ class MainSceneState extends State<MainScene> {
 }
 
 class TopBar extends StatelessComponent {
-
-
   TopBar({this.selection, this.onSelectTab, this.gameState});
 
   final TabBarSelection selection;
@@ -616,13 +614,30 @@ class BottomBar extends StatelessComponent {
   }
 }
 
-class MainScreenBackground extends NodeWithSize {
+class MainSceneBackground extends StatefulComponent {
+  MainSceneBackgroundState createState() => new MainSceneBackgroundState();
+}
+
+class MainSceneBackgroundState extends State<MainSceneBackground> {
+  MainSceneBackgroundNode _backgroundNode;
+
+  void initState() {
+    super.initState();
+    _backgroundNode = new MainSceneBackgroundNode();
+  }
+
+  Widget build(BuildContext context) {
+    return new SpriteWidget(_backgroundNode, SpriteBoxTransformMode.fixedWidth);
+  }
+}
+
+class MainSceneBackgroundNode extends NodeWithSize {
   Sprite _bgTop;
   Sprite _bgBottom;
   RepeatedImage _background;
   RepeatedImage _nebula;
 
-  MainScreenBackground() : super(new Size(320.0, 320.0)) {
+  MainSceneBackgroundNode() : super(new Size(320.0, 320.0)) {
     assert(_spriteSheet.image != null);
 
     // Add background
