@@ -12,6 +12,8 @@ class PersistantGameState {
   int currentStartingLevel = 0;
   int maxStartingLevel = 0;
 
+  int laserLevel = 0;
+
   int _lastScore = 0;
 
   int get lastScore => _lastScore;
@@ -46,8 +48,21 @@ class PersistantGameState {
       coins -= price;
       _powerupLevels[type.index] += 1;
       return true;
+    } else {
+      return false;
     }
-    else {
+  }
+
+  int laserUpgradePrice() {
+    return laserLevel * 100 + 200;
+  }
+
+  bool upgradeLaser() {
+    if (coins >= laserUpgradePrice()) {
+      coins -= laserUpgradePrice();
+      laserLevel++;
+      return true;
+    } else {
       return false;
     }
   }

@@ -183,6 +183,11 @@ class GameDemoState extends State<GameDemo> {
           setState(() {
             _gameState.upgradePowerUp(type);
           });
+        },
+        onUpgradeLaser: () {
+          setState(() {
+            _gameState.upgradeLaser();
+          });
         }
       );
     });
@@ -223,10 +228,11 @@ class GameSceneState extends State<GameScene> {
 }
 
 class MainScene extends StatefulComponent {
-  MainScene({this.gameState, this.onUpgradePowerUp});
+  MainScene({this.gameState, this.onUpgradePowerUp, this.onUpgradeLaser});
 
   final PersistantGameState gameState;
   final UpgradePowerUpCallback onUpgradePowerUp;
+  final VoidCallback onUpgradeLaser;
 
   State<MainScene> createState() => new MainSceneState();
 }
@@ -263,7 +269,7 @@ class MainSceneState extends State<MainScene> {
             new Flexible(
               child: new CenterArea(
                 selection: _tabSelection,
-                onUpgradeLaser: null,
+                onUpgradeLaser: config.onUpgradeLaser,
                 onUpgradePowerUp: config.onUpgradePowerUp,
                 gameState: config.gameState
               )
@@ -500,6 +506,13 @@ class CenterArea extends StatelessComponent {
         texture: _spriteSheetUI['btn_laser_upgrade.png'],
         width: 137.0,
         height: 63.0,
+        label: "${gameState.laserUpgradePrice()}",
+        labelOffset: new Offset(0.0, 19.0),
+        textStyle: new TextStyle(
+          fontSize: 13.0,
+          textAlign: TextAlign.center,
+          color: _darkTextColor
+        ),
         onPressed: onUpgradeLaser
       )
     );
