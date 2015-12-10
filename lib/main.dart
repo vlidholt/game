@@ -523,19 +523,31 @@ class CenterArea extends StatelessComponent {
   Widget _buildLaserUpgradeButton() {
     return new Padding(
       padding: new EdgeDims.TRBL(8.0, 0.0, 18.0, 0.0),
-      child: new TextureButton(
-        texture: _spriteSheetUI['btn_laser_upgrade.png'],
-        width: 137.0,
-        height: 63.0,
-        label: "${gameState.laserUpgradePrice()}",
-        labelOffset: new Offset(0.0, 19.0),
-        textStyle: new TextStyle(
-          fontSize: 13.0,
-          textAlign: TextAlign.center,
-          color: _darkTextColor
+      child: new Stack([
+        new TextureButton(
+          texture: _spriteSheetUI['btn_laser_upgrade.png'],
+          width: 137.0,
+          height: 63.0,
+          label: "${gameState.laserUpgradePrice()}",
+          labelOffset: new Offset(0.0, 19.0),
+          textStyle: new TextStyle(
+            fontSize: 13.0,
+            textAlign: TextAlign.center,
+            color: _darkTextColor
+          ),
+          onPressed: onUpgradeLaser
         ),
-        onPressed: onUpgradeLaser
-      )
+        new Positioned(
+          child: new LaserDisplay(level: gameState.laserLevel),
+          left: 19.5,
+          top: 14.0
+        ),
+        new Positioned(
+          child: new LaserDisplay(level: gameState.laserLevel + 1),
+          right: 19.5,
+          top: 14.0
+        )
+      ])
     );
   }
 }
@@ -722,5 +734,29 @@ class MainSceneBackgroundNode extends NodeWithSize {
   void update(double dt) {
     _background.move(10.0 * dt);
     _nebula.move(100.0 * dt);
+  }
+}
+
+class LaserDisplay extends StatelessComponent {
+  LaserDisplay({this.level});
+
+  final int level;
+
+  Widget build(BuildContext context) {
+    return new SizedBox(
+      child: new SpriteWidget(new LaserDisplayNode(level)),
+      width: 26.0,
+      height: 26.0
+    );
+  }
+}
+
+class LaserDisplayNode extends NodeWithSize {
+  LaserDisplayNode(int level): super(new Size(16.0, 16.0)) {
+    Node placementNode = new Node();
+    placementNode.position = new Point(8.0, 8.0);
+    placementNode.scale = 0.7;
+    addChild(placementNode);
+    addLaserSprites(placementNode, level, 0.0, _spriteSheet);
   }
 }
