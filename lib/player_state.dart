@@ -23,6 +23,8 @@ class PlayerState extends Node {
     _coinDisplay = new ScoreDisplay(_sheetUI);
     _coinDisplay.position = new Point(-13.0, 49.0);
     _spriteBackgroundCoins.addChild(_coinDisplay);
+
+    laserLevel = _gameState.laserLevel;
   }
 
   final SpriteSheet _sheetUI;
