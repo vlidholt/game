@@ -183,6 +183,21 @@ class GameDemoState extends State<GameDemo> {
           setState(() {
             _gameState.upgradePowerUp(type);
           });
+        },
+        onUpgradeLaser: () {
+          setState(() {
+            _gameState.upgradeLaser();
+          });
+        },
+        onStartLevelUp: () {
+          setState(() {
+            _gameState.currentStartingLevel++;
+          });
+        },
+        onStartLevelDown: () {
+          setState(() {
+            _gameState.currentStartingLevel--;
+          });
         }
       );
     });
@@ -223,10 +238,19 @@ class GameSceneState extends State<GameScene> {
 }
 
 class MainScene extends StatefulComponent {
-  MainScene({this.gameState, this.onUpgradePowerUp});
+  MainScene({
+    this.gameState,
+    this.onUpgradePowerUp,
+    this.onUpgradeLaser,
+    this.onStartLevelUp,
+    this.onStartLevelDown
+  });
 
   final PersistantGameState gameState;
   final UpgradePowerUpCallback onUpgradePowerUp;
+  final VoidCallback onUpgradeLaser;
+  final VoidCallback onStartLevelUp;
+  final VoidCallback onStartLevelDown;
 
   State<MainScene> createState() => new MainSceneState();
 }
@@ -247,7 +271,7 @@ class MainSceneState extends State<MainScene> {
       child:new DefaultTextStyle(
         style: new TextStyle(fontSize:20.0),
         child: new Stack(<Widget>[
-          new SpriteWidget(new MainScreenBackground(), SpriteBoxTransformMode.fixedWidth),
+          new MainSceneBackground(),
           new Column(<Widget>[
             new SizedBox(
               width: 320.0,
@@ -263,7 +287,7 @@ class MainSceneState extends State<MainScene> {
             new Flexible(
               child: new CenterArea(
                 selection: _tabSelection,
-                onUpgradeLaser: null,
+                onUpgradeLaser: config.onUpgradeLaser,
                 onUpgradePowerUp: config.onUpgradePowerUp,
                 gameState: config.gameState
               )
@@ -274,7 +298,10 @@ class MainSceneState extends State<MainScene> {
               child: new BottomBar(
                 onPlay: () {
                   Navigator.pushNamed(context, '/game');
-                }
+                },
+                onStartLevelUp: config.onStartLevelUp,
+                onStartLevelDown: config.onStartLevelDown,
+                gameState: config.gameState
               )
             )
           ])
@@ -285,8 +312,6 @@ class MainSceneState extends State<MainScene> {
 }
 
 class TopBar extends StatelessComponent {
-
-
   TopBar({this.selection, this.onSelectTab, this.gameState});
 
   final TabBarSelection selection;
@@ -502,6 +527,13 @@ class CenterArea extends StatelessComponent {
         texture: _spriteSheetUI['btn_laser_upgrade.png'],
         width: 137.0,
         height: 63.0,
+        label: "${gameState.laserUpgradePrice()}",
+        labelOffset: new Offset(0.0, 19.0),
+        textStyle: new TextStyle(
+          fontSize: 13.0,
+          textAlign: TextAlign.center,
+          color: _darkTextColor
+        ),
         onPressed: onUpgradeLaser
       )
     );
@@ -568,9 +600,12 @@ class ScorePanel extends StatelessComponent {
 
 class BottomBar extends StatelessComponent {
 
-  BottomBar({this.onPlay});
+  BottomBar({this.onPlay, this.gameState, this.onStartLevelUp, this.onStartLevelDown});
 
   final VoidCallback onPlay;
+  final VoidCallback onStartLevelUp;
+  final VoidCallback onStartLevelDown;
+  final PersistantGameState gameState;
 
   Widget build(BuildContext context) {
     return new Stack([
@@ -584,12 +619,22 @@ class BottomBar extends StatelessComponent {
         )
       ),
       new Positioned(
+        left: 18.0,
+        top: 14.0,
+        child: new TextureImage(
+          texture: _spriteSheetUI['level_display_${gameState.currentStartingLevel + 1}.png'],
+          width: 62.0,
+          height: 62.0
+        )
+      ),
+      new Positioned(
         left: 85.0,
         top: 14.0,
         child: new TextureButton(
           texture: _spriteSheetUI['btn_level_up.png'],
           width: 30.0,
-          height: 30.0
+          height: 30.0,
+          onPressed: onStartLevelUp
         )
       ),
       new Positioned(
@@ -598,7 +643,8 @@ class BottomBar extends StatelessComponent {
         child: new TextureButton(
           texture: _spriteSheetUI['btn_level_down.png'],
           width: 30.0,
-          height: 30.0
+          height: 30.0,
+          onPressed: onStartLevelDown
         )
       ),
       new Positioned(
@@ -616,13 +662,30 @@ class BottomBar extends StatelessComponent {
   }
 }
 
-class MainScreenBackground extends NodeWithSize {
+class MainSceneBackground extends StatefulComponent {
+  MainSceneBackgroundState createState() => new MainSceneBackgroundState();
+}
+
+class MainSceneBackgroundState extends State<MainSceneBackground> {
+  MainSceneBackgroundNode _backgroundNode;
+
+  void initState() {
+    super.initState();
+    _backgroundNode = new MainSceneBackgroundNode();
+  }
+
+  Widget build(BuildContext context) {
+    return new SpriteWidget(_backgroundNode, SpriteBoxTransformMode.fixedWidth);
+  }
+}
+
+class MainSceneBackgroundNode extends NodeWithSize {
   Sprite _bgTop;
   Sprite _bgBottom;
   RepeatedImage _background;
   RepeatedImage _nebula;
 
-  MainScreenBackground() : super(new Size(320.0, 320.0)) {
+  MainSceneBackgroundNode() : super(new Size(320.0, 320.0)) {
     assert(_spriteSheet.image != null);
 
     // Add background
