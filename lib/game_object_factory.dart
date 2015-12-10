@@ -72,3 +72,37 @@ class GameObjectFactory {
     }
   }
 }
+
+final List<Color> laserColors = <Color>[
+  new Color(0xff95f4fb),
+  new Color(0xff5bff35),
+  new Color(0xffff886c),
+  new Color(0xffffd012),
+  new Color(0xfffd7fff)
+];
+
+void addLaserSprites(Node node, int level, double r, SpriteSheet sheet) {
+  int numLasers = level % 3 + 1;
+  Color laserColor = laserColors[(level ~/ 3) % laserColors.length];
+
+  // Add sprites
+  List<Sprite> sprites = <Sprite>[];
+  for (int i = 0; i < numLasers; i++) {
+    Sprite sprite = new Sprite(sheet["explosion_particle.png"]);
+    sprite.scale = 0.5;
+    sprite.colorOverlay = laserColor;
+    sprite.transferMode = ui.TransferMode.plus;
+    node.addChild(sprite);
+    sprites.add(sprite);
+  }
+
+  // Position the individual sprites
+  if (numLasers == 2) {
+    sprites[0].position = new Point(-3.0, 0.0);
+    sprites[1].position = new Point(3.0, 0.0);
+  } else if (numLasers == 3) {
+    sprites[0].position = new Point(-4.0, 0.0);
+    sprites[1].position = new Point(4.0, 0.0);
+    sprites[2].position = new Point(0.0, -2.0);
+  }
+}
