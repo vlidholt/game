@@ -194,7 +194,7 @@ class GameDemoNode extends NodeWithSize {
   }
 
   void addLevelChunk(int chunk, double yPos) {
-    int level = chunk ~/ _chunksPerLevel;
+    int level = chunk ~/ _chunksPerLevel + _gameState.currentStartingLevel;
     int part = chunk % _chunksPerLevel;
 
     if (part == 0) {

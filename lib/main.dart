@@ -743,10 +743,12 @@ class LaserDisplay extends StatelessComponent {
   final int level;
 
   Widget build(BuildContext context) {
-    return new SizedBox(
-      child: new SpriteWidget(new LaserDisplayNode(level)),
-      width: 26.0,
-      height: 26.0
+    return new IgnorePointer(
+      child: new SizedBox(
+        child: new SpriteWidget(new LaserDisplayNode(level)),
+        width: 26.0,
+        height: 26.0
+      )
     );
   }
 }
