@@ -6,6 +6,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_sprites/flutter_sprites.dart';
 import 'package:vector_math/vector_math_64.dart';
@@ -21,6 +22,7 @@ part 'persistant_game_state.dart';
 part 'player_state.dart';
 part 'power_bar.dart';
 part 'repeated_image.dart';
+part 'sound_assets.dart';
 part 'star_field.dart';
 
 part 'coordinate_system.dart';

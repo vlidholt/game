@@ -30,7 +30,8 @@ final AssetBundle _bundle = _initBundle();
 ImageMap _imageMap;
 SpriteSheet _spriteSheet;
 SpriteSheet _spriteSheetUI;
-Map<String, SoundEffect> _sounds = <String, SoundEffect>{};
+
+SoundAssets _sounds = new SoundAssets(_bundle);
 
 main() async {
   activity.setSystemUiVisibility(SystemUiVisibility.IMMERSIVE);
@@ -50,37 +51,21 @@ main() async {
     'assets/ui_popup.png',
   ]));
 
-  // TODO(eseidel): SoundEffect doesn't really do anything except hold a future.
-  _sounds['explosion_0'] = new SoundEffect(_bundle.load('assets/explosion_0.wav'));
-  _sounds['explosion_1'] = new SoundEffect(_bundle.load('assets/explosion_1.wav'));
-  _sounds['explosion_2'] = new SoundEffect(_bundle.load('assets/explosion_2.wav'));
-  _sounds['explosion_boss'] = new SoundEffect(_bundle.load('assets/explosion_boss.wav'));
-  _sounds['explosion_player'] = new SoundEffect(_bundle.load('assets/explosion_player.wav'));
-  _sounds['laser'] = new SoundEffect(_bundle.load('assets/laser.wav'));
-  _sounds['hit'] = new SoundEffect(_bundle.load('assets/hit.wav'));
-  _sounds['levelup'] = new SoundEffect(_bundle.load('assets/levelup.wav'));
-  _sounds['pickup_0'] = new SoundEffect(_bundle.load('assets/pickup_0.wav'));
-  _sounds['pickup_1'] = new SoundEffect(_bundle.load('assets/pickup_1.wav'));
-  _sounds['pickup_2'] = new SoundEffect(_bundle.load('assets/pickup_2.wav'));
-  _sounds['pickup_powerup'] = new SoundEffect(_bundle.load('assets/pickup_powerup.wav'));
-  _sounds['click'] = new SoundEffect(_bundle.load('assets/click.wav'));
-  _sounds['buy_upgrade'] = new SoundEffect(_bundle.load('assets/buy_upgrade.wav'));
-
   loads.addAll([
-    _sounds['explosion_0'].load(),
-    _sounds['explosion_1'].load(),
-    _sounds['explosion_2'].load(),
-    _sounds['explosion_boss'].load(),
-    _sounds['explosion_player'].load(),
-    _sounds['laser'].load(),
-    _sounds['hit'].load(),
-    _sounds['levelup'].load(),
-    _sounds['pickup_0'].load(),
-    _sounds['pickup_1'].load(),
-    _sounds['pickup_2'].load(),
-    _sounds['pickup_powerup'].load(),
-    _sounds['click'].load(),
-    _sounds['buy_upgrade'].load(),
+    _sounds.load('explosion_0'),
+    _sounds.load('explosion_1'),
+    _sounds.load('explosion_2'),
+    _sounds.load('explosion_boss'),
+    _sounds.load('explosion_player'),
+    _sounds.load('laser'),
+    _sounds.load('hit'),
+    _sounds.load('levelup'),
+    _sounds.load('pickup_0'),
+    _sounds.load('pickup_1'),
+    _sounds.load('pickup_2'),
+    _sounds.load('pickup_powerup'),
+    _sounds.load('click'),
+    _sounds.load('buy_upgrade'),
   ]);
 
   await Future.wait(loads);
