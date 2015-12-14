@@ -28,13 +28,13 @@ class GameObjectFactory {
     for (int i = 0; i < numEnemies; i++) {
       double spacing = math.max(_chunkSpacing / (numEnemies + 1.0), 80.0);
       double y = yPos + _chunkSpacing / 2.0 - (numEnemies - 1) * spacing / 2.0 + i * spacing;
-      addGameObject(new EnemyScout(this), new Point(0.0, y));
+      addGameObject(new EnemyScout(this, 0), new Point(0.0, y));
     }
   }
 
   void addEnemyDestroyerSwarm(int numEnemies, double yPos) {
     for (int i = 0; i < numEnemies; i++) {
-      addGameObject(new EnemyDestroyer(this), new Point(randomSignedDouble() * 120.0 , yPos + _chunkSpacing * randomDouble()));
+      addGameObject(new EnemyDestroyer(this, 0), new Point(randomSignedDouble() * 120.0 , yPos + _chunkSpacing * randomDouble()));
     }
   }
 
