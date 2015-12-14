@@ -63,7 +63,7 @@ abstract class GameObject extends Node {
       destroy();
       f.playerState.score += (maxDamage * 10).ceil();
     } else {
-      SoundEffectPlayer.sharedInstance().play(f.sounds["hit"]);
+      f.sounds.play("hit");
     }
   }
 
@@ -211,7 +211,7 @@ abstract class Obstacle extends GameObject {
   double explosionScale = 1.0;
 
   Explosion createExplosion() {
-    SoundEffectPlayer.sharedInstance().play(f.sounds["explosion_${randomInt(3)}"]);
+    f.sounds.play("explosion_${randomInt(3)}");
     Explosion explo = new ExplosionBig(f.sheet);
     explo.scale = explosionScale;
     return explo;
@@ -388,7 +388,7 @@ class EnemyDestroyer extends Obstacle {
     _countDown -= 1;
     if (_countDown <= 0) {
       // Shoot at player
-      SoundEffectPlayer.sharedInstance().play(f.sounds["laser"]);
+      f.sounds.play("laser");
 
       EnemyLaser laser = new EnemyLaser(f, rotation, 5.0, new Color(0xffffe38e));
       laser.position = position;
@@ -458,7 +458,7 @@ class EnemyBoss extends Obstacle {
     _countDown -= 1;
     if (_countDown <= 0) {
       // Shoot at player
-      SoundEffectPlayer.sharedInstance().play(f.sounds["laser"]);
+      f.sounds.play("laser");
 
       fire(10.0);
       fire(0.0);
@@ -504,7 +504,7 @@ class EnemyBoss extends Obstacle {
   }
 
   Explosion createExplosion() {
-    SoundEffectPlayer.sharedInstance().play(f.sounds["explosion_boss"]);
+    f.sounds.play("explosion_boss");
     ExplosionBig explo = new ExplosionBig(f.sheet);
     explo.scale = 1.5;
     return explo;
@@ -556,7 +556,7 @@ class Coin extends Collectable {
   Sprite _sprite;
 
   void collect() {
-    SoundEffectPlayer.sharedInstance().play(f.sounds["pickup_0"]);
+    f.sounds.play("pickup_0");
     f.playerState.addCoin(this);
     super.collect();
   }
@@ -610,7 +610,7 @@ class PowerUp extends Collectable {
   }
 
   void collect() {
-    SoundEffectPlayer.sharedInstance().play(f.sounds["buy_upgrade"]);
+    f.sounds.play("buy_upgrade");
     f.playerState.activatePowerUp(type);
     super.collect();
   }

@@ -4,7 +4,7 @@ class GameObjectFactory {
   GameObjectFactory(this.sheet, this.sounds, this.level, this.playerState);
 
   SpriteSheet sheet;
-  Map<String,SoundEffect> sounds;
+  SoundAssets sounds;
   Level level;
   PlayerState playerState;
 

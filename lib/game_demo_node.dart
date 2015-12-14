@@ -63,12 +63,9 @@ class GameDemoNode extends NodeWithSize {
 
   // Resources
   ImageMap _images;
-  Map<String, SoundEffect> _sounds;
+  SoundAssets _sounds;
   SpriteSheet _spritesGame;
   SpriteSheet _spritesUI;
-
-  // Sounds
-  SoundEffectPlayer _effectPlayer = SoundEffectPlayer.sharedInstance();
 
   // Callback
   GameOverCallback _gameOverCallback;
@@ -246,7 +243,7 @@ class GameDemoNode extends NodeWithSize {
     // Hide ship
     _level.ship.visible = false;
 
-    _effectPlayer.play(_sounds["explosion_player"]);
+    _sounds.play("explosion_player");
 
     // Add explosion
     ExplosionBig explo = new ExplosionBig(_spritesGame);
