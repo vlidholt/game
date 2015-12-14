@@ -151,7 +151,7 @@ class GameDemoState extends State<GameDemo> {
       title: 'Asteroids',
       color: const Color(0xFF9900FF),
       child: new Navigator(
-        onGenerateRoute: (NamedRouteSettings settings) {
+        onGenerateRoute: (RouteSettings settings) {
           switch (settings.name) {
             case '/game': return _buildGameSceneRoute();
             default: return _buildMainSceneRoute();
@@ -453,7 +453,6 @@ class CenterArea extends StatelessComponent {
   Widget _buildCenterArea() {
     return new TabBarView(
       items: <int>[0, 1, 2],
-      itemExtent: 320.0,
       selection: selection,
       itemBuilder: (BuildContext context, int item, int index) {
         if (item == 0)
