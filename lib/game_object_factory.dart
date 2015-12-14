@@ -56,17 +56,17 @@ class GameObjectFactory {
 
     // Add boss's helpers
     if (l >= 1) {
-      EnemyDestroyer destroyer0 = new EnemyDestroyer(this);
+      EnemyDestroyer destroyer0 = new EnemyDestroyer(this, 0);
       addGameObject(destroyer0, new Point(-80.0, yPos + _chunkSpacing / 2.0 + 70.0));
 
-      EnemyDestroyer destroyer1 = new EnemyDestroyer(this);
+      EnemyDestroyer destroyer1 = new EnemyDestroyer(this, 0);
       addGameObject(destroyer1, new Point(80.0, yPos + _chunkSpacing / 2.0 + 70.0));
 
       if (l >= 2) {
-        EnemyDestroyer destroyer0 = new EnemyDestroyer(this);
+        EnemyDestroyer destroyer0 = new EnemyDestroyer(this, 0);
         addGameObject(destroyer0, new Point(-80.0, yPos + _chunkSpacing / 2.0 - 70.0));
 
-        EnemyDestroyer destroyer1 = new EnemyDestroyer(this);
+        EnemyDestroyer destroyer1 = new EnemyDestroyer(this, 0);
         addGameObject(destroyer1, new Point(80.0, yPos + _chunkSpacing / 2.0 - 70.0));
       }
     }
