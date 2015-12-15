@@ -1,7 +1,7 @@
 part of game;
 
 class PersistantGameState {
-  int coins = 200;
+  int coins = 10000;
 
   List<int> _powerupLevels = <int>[0, 0, 0, 0];
 

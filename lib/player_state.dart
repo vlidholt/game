@@ -93,6 +93,7 @@ class PlayerState extends Node {
       _speedLaserFrames += _gameState.powerUpFrames(type);
     } else if (type == PowerUpType.speedBoost) {
       _speedBoostFrames += _gameState.powerUpFrames(type);
+      _shieldFrames += _gameState.powerUpFrames(type) + 60;
     }
   }
 

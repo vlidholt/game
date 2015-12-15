@@ -199,19 +199,19 @@ class GameDemoNode extends NodeWithSize {
       lbl.position = new Point(0.0, yPos + _chunkSpacing / 2.0 - 150.0);
       _level.addChild(lbl);
     } else if (part == 1) {
-      _objectFactory.addAsteroids(10 + level * 2, yPos, 0.0 + (level * 0.2).clamp(0.0, 0.7));
+      _objectFactory.addAsteroids(level, yPos);
     } else if (part == 2) {
-      _objectFactory.addEnemyScoutSwarm(4 + level * 2, yPos);
+      _objectFactory.addEnemyScoutSwarm(level, yPos);
     } else if (part == 3) {
-      _objectFactory.addAsteroids(10 + level * 2, yPos, 0.0 + (level * 0.2).clamp(0.0, 0.7));
+      _objectFactory.addAsteroids(level, yPos);
     } else if (part == 4) {
-      _objectFactory.addEnemyDestroyerSwarm(2 + level, yPos);
+      _objectFactory.addEnemyDestroyerSwarm(level, yPos);
     } else if (part == 5) {
-      _objectFactory.addAsteroids(10 + level * 2, yPos, 0.0 + (level * 0.2).clamp(0.0, 0.7));
+      _objectFactory.addAsteroids(level, yPos);
     } else if (part == 6) {
-      _objectFactory.addEnemyScoutSwarm(4 + level * 2, yPos);
+      _objectFactory.addEnemyScoutSwarm(level, yPos);
     } else if (part == 7) {
-      _objectFactory.addAsteroids(10 + level * 2, yPos, 0.0 + (level * 0.2).clamp(0.0, 0.7));
+      _objectFactory.addAsteroids(level, yPos);
     } else if (part == 8) {
       _objectFactory.addBossFight(level, yPos);
     }

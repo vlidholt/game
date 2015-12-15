@@ -8,7 +8,10 @@ class GameObjectFactory {
   Level level;
   PlayerState playerState;
 
-  void addAsteroids(int numAsteroids, double yPos, double distribution) {
+  void addAsteroids(int level, double yPos) {
+    int numAsteroids = 10 + level * 4;
+    double distribution = (level * 0.2).clamp(0.0, 0.8);
+
     for (int i = 0; i < numAsteroids; i++) {
       GameObject obj;
       if (i == 0)
@@ -24,17 +27,43 @@ class GameObjectFactory {
     }
   }
 
-  void addEnemyScoutSwarm(int numEnemies, double yPos) {
+  void addEnemyScoutSwarm(int level, double yPos) {
+    int numEnemies = (3 + level * 3).clamp(0, 12);
+    List<int> types;
+    if (level == 0) types = [0, 0, 0];
+    else if (level == 1) types = [0, 1, 0];
+    else if (level == 2) types = [1, 0, 1];
+    else if (level == 3) types = [1, 1, 1];
+    else if (level == 4) types = [0, 1, 2];
+    else if (level == 5) types = [1, 2, 1];
+    else if (level == 6) types = [2, 1, 2];
+    else if (level == 7) types = [2, 1, 2];
+    else if (level == 8) types = [2, 2, 2];
+
     for (int i = 0; i < numEnemies; i++) {
+      int type = types[i % 3];
       double spacing = math.max(_chunkSpacing / (numEnemies + 1.0), 80.0);
       double y = yPos + _chunkSpacing / 2.0 - (numEnemies - 1) * spacing / 2.0 + i * spacing;
-      addGameObject(new EnemyScout(this, 0), new Point(0.0, y));
+      addGameObject(new EnemyScout(this, type), new Point(0.0, y));
     }
   }
 
-  void addEnemyDestroyerSwarm(int numEnemies, double yPos) {
+  void addEnemyDestroyerSwarm(int level, double yPos) {
+    int numEnemies = (2 + level).clamp(2, 10);
+    List<int> types;
+    if (level == 0) types = [0, 0, 0];
+    else if (level == 1) types = [0, 1, 0];
+    else if (level == 2) types = [1, 0, 1];
+    else if (level == 3) types = [1, 1, 1];
+    else if (level == 4) types = [0, 1, 2];
+    else if (level == 5) types = [1, 2, 1];
+    else if (level == 6) types = [2, 1, 2];
+    else if (level == 7) types = [2, 1, 2];
+    else if (level == 8) types = [2, 2, 2];
+
     for (int i = 0; i < numEnemies; i++) {
-      addGameObject(new EnemyDestroyer(this, 0), new Point(randomSignedDouble() * 120.0 , yPos + _chunkSpacing * randomDouble()));
+      int type = types[i % 3];
+      addGameObject(new EnemyDestroyer(this, type), new Point(randomSignedDouble() * 120.0 , yPos + _chunkSpacing * randomDouble()));
     }
   }
 

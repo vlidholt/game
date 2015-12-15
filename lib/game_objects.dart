@@ -305,8 +305,8 @@ class EnemyScout extends Obstacle {
     radius = 12.0 + level * 2.0;
 
     if (level == 0) maxDamage = 1.0;
-    else if (level == 1) maxDamage = 2.0;
-    else if (level == 2) maxDamage = 4.0;
+    else if (level == 1) maxDamage = 4.0;
+    else if (level == 2) maxDamage = 8.0;
 
     addChild(_sprite);
 
@@ -496,7 +496,7 @@ class EnemyBoss extends Obstacle {
 
   void destroy() {
     f.playerState.boss = null;
-    _powerBar.removeFromParent();
+    if (_powerBar.parent != null) _powerBar.removeFromParent();
 
     // Flash the screen
     NodeWithSize screen = f.playerState.parent;
