@@ -1,7 +1,43 @@
 part of game;
 
 class PersistantGameState {
-  int coins = 10000;
+
+  Future load() async {
+    String dataDir = await getAppDataDir();
+    File file = new File(dataDir + '/gamestate.json');
+    if (await file.exists()) {
+      String json = await file.readAsString();
+      JsonDecoder decoder = new JsonDecoder();
+      Map data = decoder.convert(json);
+
+      coins = data['coins'];
+      _powerupLevels = data['powerUpLevels'];
+      _currentStartingLevel = data['currentStartingLevel'];
+      maxStartingLevel = data['maxStartingLevel'];
+      laserLevel = data['laserLevel'];
+      _lastScore = data['lastScore'];
+      weeklyBestScore = data['bestScore'];
+    }
+  }
+
+  Future store() async {
+    String dataDir = await getAppDataDir();
+    File file = new File(dataDir + '/gamestate.json');
+    Map data = {
+      'coins': coins,
+      'powerUpLevels': _powerupLevels,
+      'currentStartingLevel': _currentStartingLevel,
+      'maxStartingLevel': maxStartingLevel,
+      'laserLevel': laserLevel,
+      'lastScore': _lastScore,
+      'bestScore': weeklyBestScore
+    };
+    JsonEncoder encoder = new JsonEncoder();
+    String json = encoder.convert(data);
+    await file.writeAsString(json);
+  }
+
+  int coins = 0;
 
   List<int> _powerupLevels = <int>[0, 0, 0, 0];
 
@@ -60,6 +96,7 @@ class PersistantGameState {
     if (coins >= price && _powerupLevels[type.index] < maxPowerUpLevel) {
       coins -= price;
       _powerupLevels[type.index] += 1;
+      store();
       return true;
     } else {
       return false;
@@ -74,6 +111,7 @@ class PersistantGameState {
     if (coins >= laserUpgradePrice() && laserLevel < maxLaserLevel) {
       coins -= laserUpgradePrice();
       laserLevel++;
+      store();
       return true;
     } else {
       return false;
@@ -85,5 +123,6 @@ class PersistantGameState {
       maxStartingLevel = level;
       _currentStartingLevel = level;
     }
+    store();
   }
 }

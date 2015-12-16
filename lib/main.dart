@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:ui' as ui;
 
 import 'package:flutter/painting.dart';
 import 'package:flutter/animation.dart';
@@ -26,6 +25,8 @@ AssetBundle _initBundle() {
   return new NetworkAssetBundle(new Uri.directory(Uri.base.origin));
 }
 
+PersistantGameState _gameState;
+
 final AssetBundle _bundle = _initBundle();
 
 ImageMap _imageMap;
@@ -36,6 +37,10 @@ SoundAssets _sounds = new SoundAssets(_bundle);
 
 main() async {
   activity.setSystemUiVisibility(SystemUiVisibility.IMMERSIVE);
+
+  // Load game state
+  _gameState = new PersistantGameState();
+  await _gameState.load();
 
   _imageMap = new ImageMap(_bundle);
 
@@ -82,7 +87,7 @@ main() async {
 
   SoundTrackPlayer stPlayer = SoundTrackPlayer.sharedInstance();
   SoundTrack music = await stPlayer.load(_bundle.load('assets/music_game.mp3'));
-  stPlayer.play(music, loop: true);
+  stPlayer.play(music);
 
   runApp(new GameDemo());
 }
@@ -123,28 +128,10 @@ class GameDemo extends StatefulComponent {
   GameDemoState createState() => new GameDemoState();
 }
 
-class GameDemoState extends State<GameDemo> with BindingObserver {
-  PersistantGameState _gameState;
+class GameDemoState extends State<GameDemo> {
 
   void initState() {
     super.initState();
-
-    _gameState = new PersistantGameState();
-
-    WidgetFlutterBinding.instance.addObserver(this);
-  }
-
-  void dispose() {
-    WidgetFlutterBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  void didChangeAppLifecycleState(ui.AppLifecycleState state) {
-    if (state == ui.AppLifecycleState.paused) {
-      SoundTrackPlayer.sharedInstance().pauseAll();
-    } else if (state == ui.AppLifecycleState.resumed) {
-      SoundTrackPlayer.sharedInstance().resumeAll();
-    }
   }
 
   Widget build(BuildContext context) {
