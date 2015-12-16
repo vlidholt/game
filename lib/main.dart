@@ -136,7 +136,7 @@ class GameDemoState extends State<GameDemo> {
 
   Widget build(BuildContext context) {
     return new Title(
-      title: 'Asteroids',
+      title: 'Space Blast',
       color: const Color(0xFF9900FF),
       child: new Navigator(
         onGenerateRoute: (RouteSettings settings) {
