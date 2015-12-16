@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:flutter/painting.dart';
 import 'package:flutter/animation.dart';
@@ -14,6 +15,8 @@ import 'package:flutter_sprites/flutter_sprites.dart';
 
 import 'game_demo.dart';
 
+PersistantGameState _gameState;
+
 final Color _darkTextColor = new Color(0xff3c3f4a);
 
 typedef void SelectTabCallback(int index);
@@ -24,8 +27,6 @@ AssetBundle _initBundle() {
     return rootBundle;
   return new NetworkAssetBundle(new Uri.directory(Uri.base.origin));
 }
-
-PersistantGameState _gameState;
 
 final AssetBundle _bundle = _initBundle();
 
@@ -87,7 +88,7 @@ main() async {
 
   SoundTrackPlayer stPlayer = SoundTrackPlayer.sharedInstance();
   SoundTrack music = await stPlayer.load(_bundle.load('assets/music_game.mp3'));
-  stPlayer.play(music);
+  stPlayer.play(music, loop: true);
 
   runApp(new GameDemo());
 }
@@ -128,10 +129,25 @@ class GameDemo extends StatefulComponent {
   GameDemoState createState() => new GameDemoState();
 }
 
-class GameDemoState extends State<GameDemo> {
+class GameDemoState extends State<GameDemo> with BindingObserver {
 
   void initState() {
     super.initState();
+
+    WidgetFlutterBinding.instance.addObserver(this);
+  }
+
+  void dispose() {
+    WidgetFlutterBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  void didChangeAppLifecycleState(ui.AppLifecycleState state) {
+    if (state == ui.AppLifecycleState.paused) {
+      SoundTrackPlayer.sharedInstance().pauseAll();
+    } else if (state == ui.AppLifecycleState.resumed) {
+      SoundTrackPlayer.sharedInstance().resumeAll();
+    }
   }
 
   Widget build(BuildContext context) {
