@@ -165,10 +165,11 @@ class GameDemoState extends State<GameDemo> with BindingObserver {
   GameRoute _buildGameSceneRoute() {
     return new GameRoute((BuildContext context) {
       return new GameScene(
-        onGameOver: (int lastScore, int coins) {
+        onGameOver: (int lastScore, int coins, int levelReached) {
           setState(() {
             _gameState.lastScore = lastScore;
             _gameState.coins += coins;
+            _gameState.reachedLevel(levelReached);
           });
         },
         gameState: _gameState
@@ -226,9 +227,9 @@ class GameSceneState extends State<GameScene> {
       _spriteSheetUI,
       _sounds,
       config.gameState,
-      (int score, int coins) {
+      (int score, int coins, int levelReached) {
         Navigator.pop(context);
-        config.onGameOver(score, coins);
+        config.onGameOver(score, coins, levelReached);
       }
     );
   }

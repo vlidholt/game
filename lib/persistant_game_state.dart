@@ -9,6 +9,8 @@ class PersistantGameState {
     return _powerupLevels[type.index];
   }
 
+  int maxPowerUpLevel = 8;
+
   int _currentStartingLevel = 0;
 
   int get currentStartingLevel => _currentStartingLevel;
@@ -19,9 +21,11 @@ class PersistantGameState {
       _currentStartingLevel = currentStartingLevel;
   }
 
-  int maxStartingLevel = 8;
+  int maxStartingLevel = 0;
 
   int laserLevel = 0;
+
+  int maxLaserLevel = 11;
 
   int _lastScore = 0;
 
@@ -53,7 +57,7 @@ class PersistantGameState {
   bool upgradePowerUp(PowerUpType type) {
     int price = powerUpUpgradePrice(type);
 
-    if (coins >= price) {
+    if (coins >= price && _powerupLevels[type.index] < maxPowerUpLevel) {
       coins -= price;
       _powerupLevels[type.index] += 1;
       return true;
@@ -67,12 +71,19 @@ class PersistantGameState {
   }
 
   bool upgradeLaser() {
-    if (coins >= laserUpgradePrice()) {
+    if (coins >= laserUpgradePrice() && laserLevel < maxLaserLevel) {
       coins -= laserUpgradePrice();
       laserLevel++;
       return true;
     } else {
       return false;
+    }
+  }
+
+  void reachedLevel(int level) {
+    if (level > maxStartingLevel && level < 9) {
+      maxStartingLevel = level;
+      _currentStartingLevel = level;
     }
   }
 }
