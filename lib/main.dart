@@ -183,22 +183,30 @@ class GameDemoState extends State<GameDemo> with BindingObserver {
         gameState: _gameState,
         onUpgradePowerUp: (PowerUpType type) {
           setState(() {
-            _gameState.upgradePowerUp(type);
+            if (_gameState.upgradePowerUp(type))
+              _sounds.play('buy_upgrade');
+            else
+              _sounds.play('click');
           });
         },
         onUpgradeLaser: () {
           setState(() {
-            _gameState.upgradeLaser();
+            if (_gameState.upgradeLaser())
+              _sounds.play('buy_upgrade');
+            else
+              _sounds.play('click');
           });
         },
         onStartLevelUp: () {
           setState(() {
             _gameState.currentStartingLevel++;
+            _sounds.play('click');
           });
         },
         onStartLevelDown: () {
           setState(() {
             _gameState.currentStartingLevel--;
+            _sounds.play('click');
           });
         }
       );
@@ -281,6 +289,7 @@ class MainSceneState extends State<MainScene> {
               child: new TopBar(
                 onSelectTab: (int tab) {
                   setState(() => _tabSelection.index = tab);
+                  _sounds.play('click');
                 },
                 selection: _tabSelection,
                 gameState: config.gameState
