@@ -14,6 +14,7 @@
                   android:launchMode="singleTask"
                   android:theme="@android:style/Theme.Black.NoTitleBar"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
+                  android:screenOrientation="portrait"
                   android:hardwareAccelerated="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
