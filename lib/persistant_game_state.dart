@@ -1,13 +1,51 @@
 part of game;
 
 class PersistantGameState {
-  int coins = 200;
+
+  Future load() async {
+    String dataDir = await getAppDataDir();
+    File file = new File(dataDir + '/gamestate.json');
+    if (await file.exists()) {
+      String json = await file.readAsString();
+      JsonDecoder decoder = new JsonDecoder();
+      Map data = decoder.convert(json);
+
+      coins = data['coins'];
+      _powerupLevels = data['powerUpLevels'];
+      _currentStartingLevel = data['currentStartingLevel'];
+      maxStartingLevel = data['maxStartingLevel'];
+      laserLevel = data['laserLevel'];
+      _lastScore = data['lastScore'];
+      weeklyBestScore = data['bestScore'];
+    }
+  }
+
+  Future store() async {
+    String dataDir = await getAppDataDir();
+    File file = new File(dataDir + '/gamestate.json');
+    Map data = {
+      'coins': coins,
+      'powerUpLevels': _powerupLevels,
+      'currentStartingLevel': _currentStartingLevel,
+      'maxStartingLevel': maxStartingLevel,
+      'laserLevel': laserLevel,
+      'lastScore': _lastScore,
+      'bestScore': weeklyBestScore
+    };
+    JsonEncoder encoder = new JsonEncoder();
+    String json = encoder.convert(data);
+    await file.writeAsString(json);
+  }
+
+  int coins = 0;
 
   List<int> _powerupLevels = <int>[0, 0, 0, 0];
 
   int powerupLevel(PowerUpType type) {
     return _powerupLevels[type.index];
   }
+
+  int maxPowerUpLevel = 8;
 
   int _currentStartingLevel = 0;
 
@@ -19,9 +57,11 @@ class PersistantGameState {
       _currentStartingLevel = currentStartingLevel;
   }
 
-  int maxStartingLevel = 8;
+  int maxStartingLevel = 0;
 
   int laserLevel = 0;
+
+  int maxLaserLevel = 11;
 
   int _lastScore = 0;
 
@@ -53,9 +93,10 @@ class PersistantGameState {
   bool upgradePowerUp(PowerUpType type) {
     int price = powerUpUpgradePrice(type);
 
-    if (coins >= price) {
+    if (coins >= price && _powerupLevels[type.index] < maxPowerUpLevel) {
       coins -= price;
       _powerupLevels[type.index] += 1;
+      store();
       return true;
     } else {
       return false;
@@ -67,12 +108,21 @@ class PersistantGameState {
   }
 
   bool upgradeLaser() {
-    if (coins >= laserUpgradePrice()) {
+    if (coins >= laserUpgradePrice() && laserLevel < maxLaserLevel) {
       coins -= laserUpgradePrice();
       laserLevel++;
+      store();
       return true;
     } else {
       return false;
     }
+  }
+
+  void reachedLevel(int level) {
+    if (level > maxStartingLevel && level < 9) {
+      maxStartingLevel = level;
+      _currentStartingLevel = level;
+    }
+    store();
   }
 }

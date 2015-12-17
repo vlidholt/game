@@ -8,7 +8,7 @@ final int _chunksPerLevel = 9;
 
 final bool _drawDebug = false;
 
-typedef void GameOverCallback(int score, int coins);
+typedef void GameOverCallback(int score, int coins, int levelReached);
 
 class GameDemoNode extends NodeWithSize {
 
@@ -76,6 +76,7 @@ class GameDemoNode extends NodeWithSize {
 
   GameObjectFactory _objectFactory;
   Level _level;
+  int _topLevelReached = 0;
   StarField _starField;
   RepeatedImage _background;
   RepeatedImage _nebula;
@@ -197,21 +198,23 @@ class GameDemoNode extends NodeWithSize {
     if (part == 0) {
       LevelLabel lbl = new LevelLabel(_objectFactory, level + 1);
       lbl.position = new Point(0.0, yPos + _chunkSpacing / 2.0 - 150.0);
+
+      _topLevelReached = level;
       _level.addChild(lbl);
     } else if (part == 1) {
-      _objectFactory.addAsteroids(10 + level * 2, yPos, 0.0 + (level * 0.2).clamp(0.0, 0.7));
+      _objectFactory.addAsteroids(level, yPos);
     } else if (part == 2) {
-      _objectFactory.addEnemyScoutSwarm(4 + level * 2, yPos);
+      _objectFactory.addEnemyScoutSwarm(level, yPos);
     } else if (part == 3) {
-      _objectFactory.addAsteroids(10 + level * 2, yPos, 0.0 + (level * 0.2).clamp(0.0, 0.7));
+      _objectFactory.addAsteroids(level, yPos);
     } else if (part == 4) {
-      _objectFactory.addEnemyDestroyerSwarm(2 + level, yPos);
+      _objectFactory.addEnemyDestroyerSwarm(level, yPos);
     } else if (part == 5) {
-      _objectFactory.addAsteroids(10 + level * 2, yPos, 0.0 + (level * 0.2).clamp(0.0, 0.7));
+      _objectFactory.addAsteroids(level, yPos);
     } else if (part == 6) {
-      _objectFactory.addEnemyScoutSwarm(4 + level * 2, yPos);
+      _objectFactory.addEnemyScoutSwarm(level, yPos);
     } else if (part == 7) {
-      _objectFactory.addAsteroids(10 + level * 2, yPos, 0.0 + (level * 0.2).clamp(0.0, 0.7));
+      _objectFactory.addAsteroids(level, yPos);
     } else if (part == 8) {
       _objectFactory.addBossFight(level, yPos);
     }
@@ -259,7 +262,7 @@ class GameDemoNode extends NodeWithSize {
     _gameOver = true;
 
     // Return to main scene and report the score back in 2 seconds
-    new Timer(new Duration(seconds: 2), () { _gameOverCallback(_playerState.score, _playerState.coins); });
+    new Timer(new Duration(seconds: 2), () { _gameOverCallback(_playerState.score, _playerState.coins, _topLevelReached); });
   }
 }
 

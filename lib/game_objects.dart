@@ -298,11 +298,16 @@ class AsteroidPowerUp extends AsteroidBig {
 }
 
 class EnemyScout extends Obstacle {
-  EnemyScout(GameObjectFactory f) : super(f) {
-    _sprite = new Sprite(f.sheet["enemy_scout_0.png"]);
+  EnemyScout(GameObjectFactory f, int level) : super(f) {
+    _sprite = new Sprite(f.sheet["enemy_scout_$level.png"]);
     _sprite.scale = 0.32;
-    radius = 12.0;
-    maxDamage = 1.0;
+
+    radius = 12.0 + level * 2.0;
+
+    if (level == 0) maxDamage = 1.0;
+    else if (level == 1) maxDamage = 4.0;
+    else if (level == 2) maxDamage = 8.0;
+
     addChild(_sprite);
 
     constraints = <Constraint>[new ConstraintRotationToMovement(dampening: 0.5)];
@@ -358,11 +363,16 @@ class EnemyScout extends Obstacle {
 }
 
 class EnemyDestroyer extends Obstacle {
-  EnemyDestroyer(GameObjectFactory f) : super(f) {
-    _sprite = new Sprite(f.sheet["enemy_destroyer_1.png"]);
+  EnemyDestroyer(GameObjectFactory f, int level) : super(f) {
+    _sprite = new Sprite(f.sheet["enemy_destroyer_$level.png"]);
     _sprite.scale = 0.32;
-    radius = 24.0;
-    maxDamage = 4.0;
+
+    radius = 24.0 + level * 2;
+
+    if (level == 0) maxDamage = 4.0;
+    else if (level == 1) maxDamage = 8.0;
+    else if (level == 2) maxDamage = 16.0;
+
     addChild(_sprite);
 
     constraints = <Constraint>[new ConstraintRotationToNode(f.level.ship, dampening: 0.05)];
@@ -486,7 +496,7 @@ class EnemyBoss extends Obstacle {
 
   void destroy() {
     f.playerState.boss = null;
-    _powerBar.removeFromParent();
+    if (_powerBar.parent != null) _powerBar.removeFromParent();
 
     // Flash the screen
     NodeWithSize screen = f.playerState.parent;

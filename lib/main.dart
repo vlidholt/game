@@ -15,6 +15,8 @@ import 'package:flutter_sprites/flutter_sprites.dart';
 
 import 'game_demo.dart';
 
+PersistantGameState _gameState;
+
 final Color _darkTextColor = new Color(0xff3c3f4a);
 
 typedef void SelectTabCallback(int index);
@@ -36,6 +38,10 @@ SoundAssets _sounds = new SoundAssets(_bundle);
 
 main() async {
   activity.setSystemUiVisibility(SystemUiVisibility.IMMERSIVE);
+
+  // Load game state
+  _gameState = new PersistantGameState();
+  await _gameState.load();
 
   _imageMap = new ImageMap(_bundle);
 
@@ -124,12 +130,9 @@ class GameDemo extends StatefulComponent {
 }
 
 class GameDemoState extends State<GameDemo> with BindingObserver {
-  PersistantGameState _gameState;
 
   void initState() {
     super.initState();
-
-    _gameState = new PersistantGameState();
 
     WidgetFlutterBinding.instance.addObserver(this);
   }
@@ -149,7 +152,7 @@ class GameDemoState extends State<GameDemo> with BindingObserver {
 
   Widget build(BuildContext context) {
     return new Title(
-      title: 'Asteroids',
+      title: 'Space Blast',
       color: const Color(0xFF9900FF),
       child: new Navigator(
         onGenerateRoute: (RouteSettings settings) {
@@ -165,10 +168,11 @@ class GameDemoState extends State<GameDemo> with BindingObserver {
   GameRoute _buildGameSceneRoute() {
     return new GameRoute((BuildContext context) {
       return new GameScene(
-        onGameOver: (int lastScore, int coins) {
+        onGameOver: (int lastScore, int coins, int levelReached) {
           setState(() {
             _gameState.lastScore = lastScore;
             _gameState.coins += coins;
+            _gameState.reachedLevel(levelReached);
           });
         },
         gameState: _gameState
@@ -182,22 +186,30 @@ class GameDemoState extends State<GameDemo> with BindingObserver {
         gameState: _gameState,
         onUpgradePowerUp: (PowerUpType type) {
           setState(() {
-            _gameState.upgradePowerUp(type);
+            if (_gameState.upgradePowerUp(type))
+              _sounds.play('buy_upgrade');
+            else
+              _sounds.play('click');
           });
         },
         onUpgradeLaser: () {
           setState(() {
-            _gameState.upgradeLaser();
+            if (_gameState.upgradeLaser())
+              _sounds.play('buy_upgrade');
+            else
+              _sounds.play('click');
           });
         },
         onStartLevelUp: () {
           setState(() {
             _gameState.currentStartingLevel++;
+            _sounds.play('click');
           });
         },
         onStartLevelDown: () {
           setState(() {
             _gameState.currentStartingLevel--;
+            _sounds.play('click');
           });
         }
       );
@@ -226,9 +238,9 @@ class GameSceneState extends State<GameScene> {
       _spriteSheetUI,
       _sounds,
       config.gameState,
-      (int score, int coins) {
+      (int score, int coins, int levelReached) {
         Navigator.pop(context);
-        config.onGameOver(score, coins);
+        config.onGameOver(score, coins, levelReached);
       }
     );
   }
@@ -263,7 +275,11 @@ class MainSceneState extends State<MainScene> {
   void initState() {
     super.initState();
 
-    _tabSelection = new TabBarSelection(index: 0);
+    _tabSelection = new TabBarSelection(
+      index: 0,
+      maxIndex: 2,
+      onChanged: _handleSelectionChange
+    );
   }
 
   Widget build(BuildContext context) {
@@ -280,6 +296,7 @@ class MainSceneState extends State<MainScene> {
               child: new TopBar(
                 onSelectTab: (int tab) {
                   setState(() => _tabSelection.index = tab);
+                  _sounds.play('click');
                 },
                 selection: _tabSelection,
                 gameState: config.gameState
@@ -309,6 +326,10 @@ class MainSceneState extends State<MainScene> {
         ])
       )
     );
+  }
+
+  void _handleSelectionChange() {
+    setState((){});
   }
 }
 
