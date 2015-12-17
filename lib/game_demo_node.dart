@@ -163,7 +163,8 @@ class GameDemoNode extends NodeWithSize {
         if (node.collidingWith(_level.ship)) {
           if (_playerState.shieldActive) {
             // Hit, but saved by the shield!
-            node.destroy();
+            if (!(node is EnemyBoss))
+              node.destroy();
           } else {
             // The ship was hit :(
             killShip();

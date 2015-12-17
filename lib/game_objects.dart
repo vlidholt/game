@@ -359,6 +359,11 @@ class EnemyScout extends Obstacle {
     return new Coin(f);
   }
 
+  set damage(double d) {
+    super.damage = d;
+    _sprite.colorOverlay = colorForDamage(d, maxDamage);
+  }
+
   Sprite _sprite;
 }
 
