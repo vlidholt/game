@@ -275,7 +275,11 @@ class MainSceneState extends State<MainScene> {
   void initState() {
     super.initState();
 
-    _tabSelection = new TabBarSelection(index: 0);
+    _tabSelection = new TabBarSelection(
+      index: 0,
+      maxIndex: 2,
+      onChanged: _handleSelectionChange
+    );
   }
 
   Widget build(BuildContext context) {
@@ -322,6 +326,10 @@ class MainSceneState extends State<MainScene> {
         ])
       )
     );
+  }
+
+  void _handleSelectionChange() {
+    setState((){});
   }
 }
 
