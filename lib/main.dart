@@ -270,16 +270,8 @@ class MainScene extends StatefulComponent {
 
 class MainSceneState extends State<MainScene> {
 
-  TabBarSelection _tabSelection;
-
   void initState() {
     super.initState();
-
-    _tabSelection = new TabBarSelection(
-      index: 0,
-      maxIndex: 2,
-      onChanged: _handleSelectionChange
-    );
   }
 
   Widget build(BuildContext context) {
@@ -292,19 +284,13 @@ class MainSceneState extends State<MainScene> {
           new Column(<Widget>[
             new SizedBox(
               width: 320.0,
-              height: 108.0,
+              height: 98.0,
               child: new TopBar(
-                onSelectTab: (int tab) {
-                  setState(() => _tabSelection.index = tab);
-                  _sounds.play('click');
-                },
-                selection: _tabSelection,
                 gameState: config.gameState
               )
             ),
             new Flexible(
               child: new CenterArea(
-                selection: _tabSelection,
                 onUpgradeLaser: config.onUpgradeLaser,
                 onUpgradePowerUp: config.onUpgradePowerUp,
                 gameState: config.gameState
@@ -326,10 +312,6 @@ class MainSceneState extends State<MainScene> {
         ])
       )
     );
-  }
-
-  void _handleSelectionChange() {
-    setState((){});
   }
 }
 
@@ -390,12 +372,9 @@ class TopBar extends StatelessComponent {
           style: scoreLabelStyle
         )
       ),
-      _buildTabButton("Upgrades", 0),
-      _buildTabButton("Friend Scores", 1),
-      _buildTabButton("World Scores", 2),
       new Positioned(
         left: 10.0,
-        top: 87.0,
+        top: 80.0,
         child: new TextureImage(
           texture: _spriteSheetUI['icn_crystal.png'],
           width: 12.0,
@@ -404,7 +383,7 @@ class TopBar extends StatelessComponent {
       ),
       new Positioned(
         left: 28.0,
-        top: 87.0,
+        top: 80.0,
         child: new Text(
           "${gameState.coins}",
           style: new TextStyle(
@@ -415,42 +394,6 @@ class TopBar extends StatelessComponent {
         )
       )
     ]);
-  }
-
-  Widget _buildTabButton(String title, int index) {
-    TextAlign textAlign = TextAlign.center;
-    if (index == 0) textAlign = TextAlign.left;
-    else if (index == 2) textAlign = TextAlign.right;
-
-    TextStyle textStyle = null;
-    if (index == selection.index) {
-      textStyle = new TextStyle(
-        fontWeight: FontWeight.w700,
-        textAlign: textAlign,
-        fontSize: 14.0,
-        color: _darkTextColor
-      );
-    } else {
-      textStyle = new TextStyle(
-        fontWeight: FontWeight.w400,
-        textAlign: textAlign,
-        fontSize: 14.0,
-        color: _darkTextColor
-      );
-    }
-
-    return new Positioned(
-      left: 10.0 + index * 100.0,
-      top: 56.0,
-      child: new TextureButton(
-        texture: null,
-        textStyle: textStyle,
-        label: title,
-        onPressed: () => onSelectTab(index),
-        width: 100.0,
-        height: 25.0
-      )
-    );
   }
 }
 
@@ -473,18 +416,7 @@ class CenterArea extends StatelessComponent {
   }
 
   Widget _buildCenterArea() {
-    return new TabBarView(
-      items: <int>[0, 1, 2],
-      selection: selection,
-      itemBuilder: (BuildContext context, int item, int index) {
-        if (item == 0)
-          return _buildUpgradePanel();
-        else if (item == 1)
-          return _buildFriendScorePanel();
-        else if (item == 2)
-          return _buildWorldScorePanel();
-      }
-    );
+    return _buildUpgradePanel();
   }
 
   Widget _buildUpgradePanel() {
@@ -503,14 +435,6 @@ class CenterArea extends StatelessComponent {
       justifyContent: FlexJustifyContent.center,
       key: new Key("upgradePanel")
     );
-  }
-
-  Widget _buildFriendScorePanel() {
-    return new ScorePanel(key: new Key("friendScorePanel"));
-  }
-
-  Widget _buildWorldScorePanel() {
-    return new ScorePanel(key: new Key("worldScorePanel"));
   }
 
   Widget _buildPowerUpButton(PowerUpType type) {
@@ -569,64 +493,6 @@ class CenterArea extends StatelessComponent {
           top: 14.0
         )
       ])
-    );
-  }
-}
-
-class ScorePanel extends StatelessComponent {
-  ScorePanel({
-    Key key
-  }) : super(key: key);
-
-  Widget build(BuildContext context) {
-    return new ScrollableList<int>(
-      items: <int>[0, 1, 2],
-      itemBuilder: _itemBuilder,
-      itemExtent: 64.0
-    );
-  }
-
-  Widget _itemBuilder(BuildContext context, int item, int index) {
-    return new Stack(
-      [
-        new Positioned(
-          left: 0.0,
-          top: 0.0,
-          child: new Container(
-            width: 320.0,
-            height: 63.0,
-            foregroundDecoration: new BoxDecoration(
-              backgroundColor: new Color(0x33000000)
-            )
-          )
-        ),
-        new Positioned(
-          left: 10.0,
-          top: 10.0,
-          child: new TextureImage(
-            texture: _spriteSheetUI['player_icon.png'],
-            width: 44.0,
-            height: 44.0
-          )
-        ),
-        new Positioned(
-          left: 70.0,
-          top: 12.0,
-          child: new Text(
-            "Player Name $index",
-            style: new TextStyle(fontSize: 18.0)
-          )
-        ),
-        new Positioned(
-          left: 70.0,
-          bottom: 12.0,
-          child: new Text(
-            "${(index + 1) * 25428}",
-            style: new TextStyle(fontSize: 16.0)
-          )
-        )
-      ],
-      key: new Key("$index")
     );
   }
 }
