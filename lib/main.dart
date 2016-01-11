@@ -279,37 +279,41 @@ class MainSceneState extends State<MainScene> {
       systemSize: new Size(320.0, 320.0),
       child:new DefaultTextStyle(
         style: new TextStyle(fontSize:20.0),
-        child: new Stack(<Widget>[
-          new MainSceneBackground(),
-          new Column(<Widget>[
-            new SizedBox(
-              width: 320.0,
-              height: 98.0,
-              child: new TopBar(
-                gameState: config.gameState
-              )
-            ),
-            new Flexible(
-              child: new CenterArea(
-                onUpgradeLaser: config.onUpgradeLaser,
-                onUpgradePowerUp: config.onUpgradePowerUp,
-                gameState: config.gameState
-              )
-            ),
-            new SizedBox(
-              width: 320.0,
-              height: 93.0,
-              child: new BottomBar(
-                onPlay: () {
-                  Navigator.pushNamed(context, '/game');
-                },
-                onStartLevelUp: config.onStartLevelUp,
-                onStartLevelDown: config.onStartLevelDown,
-                gameState: config.gameState
-              )
+        child: new Stack(
+          children: <Widget>[
+            new MainSceneBackground(),
+            new Column(
+              children: <Widget>[
+                new SizedBox(
+                  width: 320.0,
+                  height: 98.0,
+                  child: new TopBar(
+                    gameState: config.gameState
+                  )
+                ),
+                new Flexible(
+                  child: new CenterArea(
+                    onUpgradeLaser: config.onUpgradeLaser,
+                    onUpgradePowerUp: config.onUpgradePowerUp,
+                    gameState: config.gameState
+                  )
+                ),
+                new SizedBox(
+                  width: 320.0,
+                  height: 93.0,
+                  child: new BottomBar(
+                    onPlay: () {
+                      Navigator.pushNamed(context, '/game');
+                    },
+                    onStartLevelUp: config.onStartLevelUp,
+                    onStartLevelDown: config.onStartLevelDown,
+                    gameState: config.gameState
+                  )
+                )
+              ]
             )
-          ])
-        ])
+          ]
+        )
       )
     );
   }
@@ -330,70 +334,72 @@ class TopBar extends StatelessComponent {
       color: _darkTextColor
     );
 
-    return new Stack([
-      new Positioned(
-        left: 10.0,
-        top: 6.0,
-        child: new TextureImage(
-          texture: _spriteSheetUI['player_icon.png'],
-          width: 44.0,
-          height: 44.0
-        )
-      ),
-      new Positioned(
-        left: 64.0,
-        top: 6.0,
-        child: new Text(
-          "Last Score:",
-          style: scoreLabelStyle
-        )
-      ),
-      new Positioned(
-        left: 64.0,
-        top: 28.0,
-        child: new Text(
-          "Weekly Best:",
-          style: scoreLabelStyle
-        )
-      ),
-      new Positioned(
-        right: 10.0,
-        top: 6.0,
-        child: new Text(
-          "${gameState.lastScore}",
-          style: scoreLabelStyle
-        )
-      ),
-      new Positioned(
-        right: 10.0,
-        top: 28.0,
-        child: new Text(
-          "${gameState.weeklyBestScore}",
-          style: scoreLabelStyle
-        )
-      ),
-      new Positioned(
-        left: 10.0,
-        top: 80.0,
-        child: new TextureImage(
-          texture: _spriteSheetUI['icn_crystal.png'],
-          width: 12.0,
-          height: 18.0
-        )
-      ),
-      new Positioned(
-        left: 28.0,
-        top: 80.0,
-        child: new Text(
-          "${gameState.coins}",
-          style: new TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.w500,
-            color: _darkTextColor
+    return new Stack(
+      children: <Widget>[
+        new Positioned(
+          left: 10.0,
+          top: 6.0,
+          child: new TextureImage(
+            texture: _spriteSheetUI['player_icon.png'],
+            width: 44.0,
+            height: 44.0
+          )
+        ),
+        new Positioned(
+          left: 64.0,
+          top: 6.0,
+          child: new Text(
+            "Last Score:",
+            style: scoreLabelStyle
+          )
+        ),
+        new Positioned(
+          left: 64.0,
+          top: 28.0,
+          child: new Text(
+            "Weekly Best:",
+            style: scoreLabelStyle
+          )
+        ),
+        new Positioned(
+          right: 10.0,
+          top: 6.0,
+          child: new Text(
+            "${gameState.lastScore}",
+            style: scoreLabelStyle
+          )
+        ),
+        new Positioned(
+          right: 10.0,
+          top: 28.0,
+          child: new Text(
+            "${gameState.weeklyBestScore}",
+            style: scoreLabelStyle
+          )
+        ),
+        new Positioned(
+          left: 10.0,
+          top: 80.0,
+          child: new TextureImage(
+            texture: _spriteSheetUI['icn_crystal.png'],
+            width: 12.0,
+            height: 18.0
+          )
+        ),
+        new Positioned(
+          left: 28.0,
+          top: 80.0,
+          child: new Text(
+            "${gameState.coins}",
+            style: new TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w500,
+              color: _darkTextColor
+            )
           )
         )
-      )
-    ]);
+      ]
+    );
   }
 }
 
@@ -420,11 +426,13 @@ class CenterArea extends StatelessComponent {
   }
 
   Widget _buildUpgradePanel() {
-    return new Column(<Widget>[
+    return new Column(
+      children: <Widget>[
         new Text("Upgrade Laser"),
         _buildLaserUpgradeButton(),
         new Text("Upgrade Power-Ups"),
-        new Row(<Widget>[
+        new Row(
+          children: <Widget>[
             _buildPowerUpButton(PowerUpType.shield),
             _buildPowerUpButton(PowerUpType.sideLaser),
             _buildPowerUpButton(PowerUpType.speedBoost),
@@ -440,7 +448,8 @@ class CenterArea extends StatelessComponent {
   Widget _buildPowerUpButton(PowerUpType type) {
     return new Padding(
       padding: new EdgeDims.all(8.0),
-      child: new Column([
+      child: new Column(
+        children: <Widget>[
         new TextureButton(
           texture: _spriteSheetUI['btn_powerup_${type.index}.png'],
           width: 57.0,
@@ -468,31 +477,33 @@ class CenterArea extends StatelessComponent {
   Widget _buildLaserUpgradeButton() {
     return new Padding(
       padding: new EdgeDims.TRBL(8.0, 0.0, 18.0, 0.0),
-      child: new Stack([
-        new TextureButton(
-          texture: _spriteSheetUI['btn_laser_upgrade.png'],
-          width: 137.0,
-          height: 63.0,
-          label: "${gameState.laserUpgradePrice()}",
-          labelOffset: new Offset(0.0, 19.0),
-          textStyle: new TextStyle(
-            fontSize: 13.0,
-            textAlign: TextAlign.center,
-            color: _darkTextColor
+      child: new Stack(
+        children: <Widget>[
+          new TextureButton(
+            texture: _spriteSheetUI['btn_laser_upgrade.png'],
+            width: 137.0,
+            height: 63.0,
+            label: "${gameState.laserUpgradePrice()}",
+            labelOffset: new Offset(0.0, 19.0),
+            textStyle: new TextStyle(
+              fontSize: 13.0,
+              textAlign: TextAlign.center,
+              color: _darkTextColor
+            ),
+            onPressed: onUpgradeLaser
           ),
-          onPressed: onUpgradeLaser
-        ),
-        new Positioned(
-          child: new LaserDisplay(level: gameState.laserLevel),
-          left: 19.5,
-          top: 14.0
-        ),
-        new Positioned(
-          child: new LaserDisplay(level: gameState.laserLevel + 1),
-          right: 19.5,
-          top: 14.0
-        )
-      ])
+          new Positioned(
+            child: new LaserDisplay(level: gameState.laserLevel),
+            left: 19.5,
+            top: 14.0
+          ),
+          new Positioned(
+            child: new LaserDisplay(level: gameState.laserLevel + 1),
+            right: 19.5,
+            top: 14.0
+          )
+        ]
+      )
     );
   }
 }
@@ -507,57 +518,59 @@ class BottomBar extends StatelessComponent {
   final PersistantGameState gameState;
 
   Widget build(BuildContext context) {
-    return new Stack([
-      new Positioned(
-        left: 18.0,
-        top: 14.0,
-        child: new TextureImage(
-          texture: _spriteSheetUI['level_display.png'],
-          width: 62.0,
-          height: 62.0
+    return new Stack(
+      children: <Widget>[
+        new Positioned(
+          left: 18.0,
+          top: 14.0,
+          child: new TextureImage(
+            texture: _spriteSheetUI['level_display.png'],
+            width: 62.0,
+            height: 62.0
+          )
+        ),
+        new Positioned(
+          left: 18.0,
+          top: 14.0,
+          child: new TextureImage(
+            texture: _spriteSheetUI['level_display_${gameState.currentStartingLevel + 1}.png'],
+            width: 62.0,
+            height: 62.0
+          )
+        ),
+        new Positioned(
+          left: 85.0,
+          top: 14.0,
+          child: new TextureButton(
+            texture: _spriteSheetUI['btn_level_up.png'],
+            width: 30.0,
+            height: 30.0,
+            onPressed: onStartLevelUp
+          )
+        ),
+        new Positioned(
+          left: 85.0,
+          top: 46.0,
+          child: new TextureButton(
+            texture: _spriteSheetUI['btn_level_down.png'],
+            width: 30.0,
+            height: 30.0,
+            onPressed: onStartLevelDown
+          )
+        ),
+        new Positioned(
+          left: 120.0,
+          top: 14.0,
+          child: new TextureButton(
+            onPressed: onPlay,
+            texture: _spriteSheetUI['btn_play.png'],
+            label: "PLAY",
+            width: 181.0,
+            height: 62.0
+          )
         )
-      ),
-      new Positioned(
-        left: 18.0,
-        top: 14.0,
-        child: new TextureImage(
-          texture: _spriteSheetUI['level_display_${gameState.currentStartingLevel + 1}.png'],
-          width: 62.0,
-          height: 62.0
-        )
-      ),
-      new Positioned(
-        left: 85.0,
-        top: 14.0,
-        child: new TextureButton(
-          texture: _spriteSheetUI['btn_level_up.png'],
-          width: 30.0,
-          height: 30.0,
-          onPressed: onStartLevelUp
-        )
-      ),
-      new Positioned(
-        left: 85.0,
-        top: 46.0,
-        child: new TextureButton(
-          texture: _spriteSheetUI['btn_level_down.png'],
-          width: 30.0,
-          height: 30.0,
-          onPressed: onStartLevelDown
-        )
-      ),
-      new Positioned(
-        left: 120.0,
-        top: 14.0,
-        child: new TextureButton(
-          onPressed: onPlay,
-          texture: _spriteSheetUI['btn_play.png'],
-          label: "PLAY",
-          width: 181.0,
-          height: 62.0
-        )
-      )
-    ]);
+      ]
+    );
   }
 }
 
