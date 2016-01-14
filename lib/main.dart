@@ -101,7 +101,7 @@ class GameRoute extends PageRoute {
   Widget buildPage(BuildContext context, PerformanceView performance, PerformanceView forwardPerformance) {
     return builder(context);
   }
-  Widget buildTransition(BuildContext context, PerformanceView performance, Widget child) {
+  Widget buildTransitions(BuildContext context, PerformanceView performance, PerformanceView forwardPerformance, Widget child) {
     return new FadeTransition(
       performance: performance,
       opacity: new AnimatedValue<double>(
@@ -109,18 +109,15 @@ class GameRoute extends PageRoute {
         end: 1.0,
         curve: new Interval(0.5, 1.0, curve: Curves.ease)
       ),
-      child: child
-    );
-  }
-  Widget buildForwardTransition(BuildContext context, PerformanceView performance, Widget child) {
-    return new FadeTransition(
-      performance: performance,
-      opacity: new AnimatedValue<double>(
-        1.0,
-        end: 0.0,
-        curve: new Interval(0.0, 0.5, curve: Curves.ease)
-      ),
-      child: child
+      child: new FadeTransition(
+        performance: forwardPerformance,
+        opacity: new AnimatedValue<double>(
+          1.0,
+          end: 0.0,
+          curve: new Interval(0.0, 0.5, curve: Curves.ease)
+        ),
+        child: child
+      )
     );
   }
 }
@@ -133,7 +130,6 @@ class GameDemoState extends State<GameDemo> with BindingObserver {
 
   void initState() {
     super.initState();
-
     WidgetFlutterBinding.instance.addObserver(this);
   }
 
@@ -150,11 +146,22 @@ class GameDemoState extends State<GameDemo> with BindingObserver {
     }
   }
 
+  GlobalKey<NavigatorState> _navigatorKey = new GlobalKey<NavigatorState>();
+
+  bool didPopRoute() {
+    bool result = true;
+    _navigatorKey.currentState.openTransaction((NavigatorTransaction transaction) {
+      result = transaction.pop();
+    });
+    return result;
+  }
+
   Widget build(BuildContext context) {
     return new Title(
       title: 'Space Blast',
       color: const Color(0xFF9900FF),
       child: new Navigator(
+        key: _navigatorKey,
         onGenerateRoute: (RouteSettings settings) {
           switch (settings.name) {
             case '/game': return _buildGameSceneRoute();
