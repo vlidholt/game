@@ -1,5 +1,7 @@
 part of game;
 
+const int _maxLevel = 9;
+
 class GameObjectFactory {
   GameObjectFactory(this.sheet, this.sounds, this.level, this.playerState);
 
@@ -30,15 +32,17 @@ class GameObjectFactory {
   void addEnemyScoutSwarm(int level, double yPos) {
     int numEnemies = (3 + level * 3).clamp(0, 12);
     List<int> types;
-    if (level == 0) types = [0, 0, 0];
-    else if (level == 1) types = [0, 1, 0];
-    else if (level == 2) types = [1, 0, 1];
-    else if (level == 3) types = [1, 1, 1];
-    else if (level == 4) types = [0, 1, 2];
-    else if (level == 5) types = [1, 2, 1];
-    else if (level == 6) types = [2, 1, 2];
-    else if (level == 7) types = [2, 1, 2];
-    else if (level == 8) types = [2, 2, 2];
+    int swarmLevel = level % _maxLevel;
+
+    if (swarmLevel == 0) types = [0, 0, 0];
+    else if (swarmLevel == 1) types = [0, 1, 0];
+    else if (swarmLevel == 2) types = [1, 0, 1];
+    else if (swarmLevel == 3) types = [1, 1, 1];
+    else if (swarmLevel == 4) types = [0, 1, 2];
+    else if (swarmLevel == 5) types = [1, 2, 1];
+    else if (swarmLevel == 6) types = [2, 1, 2];
+    else if (swarmLevel == 7) types = [2, 1, 2];
+    else if (swarmLevel == 8) types = [2, 2, 2];
 
     for (int i = 0; i < numEnemies; i++) {
       int type = types[i % 3];
@@ -51,15 +55,17 @@ class GameObjectFactory {
   void addEnemyDestroyerSwarm(int level, double yPos) {
     int numEnemies = (2 + level).clamp(2, 10);
     List<int> types;
-    if (level == 0) types = [0, 0, 0];
-    else if (level == 1) types = [0, 1, 0];
-    else if (level == 2) types = [1, 0, 1];
-    else if (level == 3) types = [1, 1, 1];
-    else if (level == 4) types = [0, 1, 2];
-    else if (level == 5) types = [1, 2, 1];
-    else if (level == 6) types = [2, 1, 2];
-    else if (level == 7) types = [2, 1, 2];
-    else if (level == 8) types = [2, 2, 2];
+    int swarmLevel = level % _maxLevel;
+
+    if (swarmLevel == 0) types = [0, 0, 0];
+    else if (swarmLevel == 1) types = [0, 1, 0];
+    else if (swarmLevel == 2) types = [1, 0, 1];
+    else if (swarmLevel == 3) types = [1, 1, 1];
+    else if (swarmLevel == 4) types = [0, 1, 2];
+    else if (swarmLevel == 5) types = [1, 2, 1];
+    else if (swarmLevel == 6) types = [2, 1, 2];
+    else if (swarmLevel == 7) types = [2, 1, 2];
+    else if (swarmLevel == 8) types = [2, 2, 2];
 
     for (int i = 0; i < numEnemies; i++) {
       int type = types[i % 3];
@@ -74,26 +80,26 @@ class GameObjectFactory {
     level.addChild(obj);
   }
 
-  void addBossFight(int l, double yPos) {
+  void addBossFight(int level, double yPos) {
     // Add boss
-    EnemyBoss boss = new EnemyBoss(this, l);
+    EnemyBoss boss = new EnemyBoss(this, level);
     Point pos = new Point(0.0, yPos + _chunkSpacing / 2.0);
 
     addGameObject(boss, pos);
 
     playerState.boss = boss;
 
-    int destroyerLevel = (l - 1 ~/ 3).clamp(0, 2);
+    int destroyerLevel = (level - 1 ~/ 3).clamp(0, 2);
 
     // Add boss's helpers
-    if (l >= 1) {
+    if (level >= 1) {
       EnemyDestroyer destroyer0 = new EnemyDestroyer(this, destroyerLevel);
       addGameObject(destroyer0, new Point(-80.0, yPos + _chunkSpacing / 2.0 + 70.0));
 
       EnemyDestroyer destroyer1 = new EnemyDestroyer(this, destroyerLevel);
       addGameObject(destroyer1, new Point(80.0, yPos + _chunkSpacing / 2.0 + 70.0));
 
-      if (l >= 2) {
+      if (level >= 2) {
         EnemyDestroyer destroyer0 = new EnemyDestroyer(this, destroyerLevel);
         addGameObject(destroyer0, new Point(-80.0, yPos + _chunkSpacing / 2.0 - 70.0));
 

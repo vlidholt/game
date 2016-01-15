@@ -5,8 +5,8 @@ class PersistantGameState {
   Future load() async {
     String dataDir = await getAppDataDir();
     File file = new File(dataDir + '/gamestate.json');
-    if (await file.exists()) {
-      String json = await file.readAsString();
+    if (file.existsSync()) {
+      String json = file.readAsStringSync();
       JsonDecoder decoder = new JsonDecoder();
       Map data = decoder.convert(json);
 
@@ -34,7 +34,7 @@ class PersistantGameState {
     };
     JsonEncoder encoder = new JsonEncoder();
     String json = encoder.convert(data);
-    await file.writeAsString(json);
+    file.writeAsStringSync(json);
   }
 
   int coins = 0;
