@@ -37,7 +37,7 @@ SpriteSheet _spriteSheetUI;
 SoundAssets _sounds = new SoundAssets(_bundle);
 
 main() async {
-  activity.setSystemUiVisibility(SystemUiVisibility.IMMERSIVE);
+  activity.setSystemUiVisibility(SystemUiVisibility.immersive);
 
   // Load game state
   _gameState = new PersistantGameState();
@@ -98,24 +98,28 @@ class GameRoute extends PageRoute {
   final WidgetBuilder builder;
   Duration get transitionDuration => const Duration(milliseconds: 1000);
   Color get barrierColor => null;
-  Widget buildPage(BuildContext context, PerformanceView performance, PerformanceView forwardPerformance) {
+  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> forwardAnimation) {
     return builder(context);
   }
-  Widget buildTransitions(BuildContext context, PerformanceView performance, PerformanceView forwardPerformance, Widget child) {
+  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> forwardAnimation, Widget child) {
+    CurvedAnimation curve = new CurvedAnimation(
+      parent: animation,
+      curve: new Interval(0.5, 1.0, curve: Curves.ease)
+    );
+    CurvedAnimation forwardCurve = new CurvedAnimation(
+      parent: forwardAnimation,
+      curve: new Interval(0.0, 0.5, curve: Curves.ease)
+    );
     return new FadeTransition(
-      performance: performance,
-      opacity: new AnimatedValue<double>(
-        0.0,
-        end: 1.0,
-        curve: new Interval(0.5, 1.0, curve: Curves.ease)
-      ),
+      opacity: new Tween<double>(
+        begin: 0.0,
+        end: 1.0
+      ).animate(curve),
       child: new FadeTransition(
-        performance: forwardPerformance,
-        opacity: new AnimatedValue<double>(
-          1.0,
-          end: 0.0,
-          curve: new Interval(0.0, 0.5, curve: Curves.ease)
-        ),
+        opacity: new Tween<double>(
+          begin: 1.0,
+          end: 0.0
+        ).animate(forwardCurve),
         child: child
       )
     );
