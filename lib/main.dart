@@ -37,6 +37,9 @@ SpriteSheet _spriteSheetUI;
 SoundAssets _sounds = new SoundAssets(_bundle);
 
 main() async {
+  // Workaround for https://github.com/flutter/flutter/issues/1556
+  WidgetFlutterBinding.ensureInitialized();
+
   activity.setSystemUiVisibility(SystemUiVisibility.immersive);
 
   // Load game state
