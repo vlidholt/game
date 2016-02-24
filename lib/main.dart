@@ -164,17 +164,19 @@ class GameDemoState extends State<GameDemo> with BindingObserver {
   }
 
   Widget build(BuildContext context) {
-    return new Title(
-      title: 'Space Blast',
-      color: const Color(0xFF9900FF),
-      child: new Navigator(
-        key: _navigatorKey,
-        onGenerateRoute: (RouteSettings settings) {
-          switch (settings.name) {
-            case '/game': return _buildGameSceneRoute();
-            default: return _buildMainSceneRoute();
+    return new CheckedModeBanner(
+      child: new Title(
+        title: 'Space Blast',
+        color: const Color(0xFF9900FF),
+        child: new Navigator(
+          key: _navigatorKey,
+          onGenerateRoute: (RouteSettings settings) {
+            switch (settings.name) {
+              case '/game': return _buildGameSceneRoute();
+              default: return _buildMainSceneRoute();
+            }
           }
-        }
+        )
       )
     );
   }
