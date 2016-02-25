@@ -139,9 +139,8 @@ class TextureButtonPainter extends CustomPainter {
       else
         style = config.textStyle;
 
-      PlainTextSpan textSpan = new PlainTextSpan(config.label);
-      StyledTextSpan styledTextSpan = new StyledTextSpan(style, <TextSpan>[textSpan]);
-      TextPainter painter = new TextPainter(styledTextSpan);
+      TextSpan textSpan = new TextSpan(style: style, text: config.label);
+      TextPainter painter = new TextPainter(textSpan);
 
       painter.maxWidth = size.width;
       painter.minWidth = 0.0;
