@@ -25,3 +25,8 @@ assets:
   - assets/pickup_powerup.wav
   - assets/click.wav
   - assets/buy_upgrade.wav
+  - fonts/Orbitron-Medium.ttf
+fonts:
+  - family: Orbitron
+    fonts:
+      - asset: fonts/Orbitron-Medium.ttf
