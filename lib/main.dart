@@ -294,7 +294,7 @@ class MainSceneState extends State<MainScene> {
     return new CoordinateSystem(
       systemSize: new Size(320.0, 320.0),
       child:new DefaultTextStyle(
-        style: new TextStyle(fontSize:20.0),
+        style: new TextStyle(fontFamily: "Orbitron", fontSize:20.0),
         child: new Stack(
           children: <Widget>[
             new MainSceneBackground(),
@@ -345,7 +345,8 @@ class TopBar extends StatelessComponent {
   Widget build(BuildContext context) {
 
     TextStyle scoreLabelStyle = new TextStyle(
-      fontSize: 18.0,
+      fontFamily: "Orbitron",
+      fontSize: 20.0,
       fontWeight: FontWeight.w500,
       color: _darkTextColor
     );
@@ -353,48 +354,39 @@ class TopBar extends StatelessComponent {
     return new Stack(
       children: <Widget>[
         new Positioned(
-          left: 10.0,
-          top: 6.0,
-          child: new TextureImage(
-            texture: _spriteSheetUI['player_icon.png'],
-            width: 44.0,
-            height: 44.0
-          )
-        ),
-        new Positioned(
-          left: 64.0,
-          top: 6.0,
+          left: 18.0,
+          top: 13.0,
           child: new Text(
-            "Last Score:",
+            "Last Score",
             style: scoreLabelStyle
           )
         ),
         new Positioned(
-          left: 64.0,
-          top: 28.0,
+          left: 18.0,
+          top: 39.0,
           child: new Text(
-            "Weekly Best:",
+            "Weekly Best",
             style: scoreLabelStyle
           )
         ),
         new Positioned(
-          right: 10.0,
-          top: 6.0,
+          right: 18.0,
+          top: 13.0,
           child: new Text(
             "${gameState.lastScore}",
             style: scoreLabelStyle
           )
         ),
         new Positioned(
-          right: 10.0,
-          top: 28.0,
+          right: 18.0,
+          top: 39.0,
           child: new Text(
             "${gameState.weeklyBestScore}",
             style: scoreLabelStyle
           )
         ),
         new Positioned(
-          left: 10.0,
+          left: 18.0,
           top: 80.0,
           child: new TextureImage(
             texture: _spriteSheetUI['icn_crystal.png'],
@@ -403,8 +395,8 @@ class TopBar extends StatelessComponent {
           )
         ),
         new Positioned(
-          left: 28.0,
-          top: 80.0,
+          left: 36.0,
+          top: 81.0,
           child: new Text(
             "${gameState.coins}",
             style: new TextStyle(
@@ -471,9 +463,10 @@ class CenterArea extends StatelessComponent {
           width: 57.0,
           height: 57.0,
           label: "${gameState.powerUpUpgradePrice(type)}",
-          labelOffset: new Offset(0.0, 19.0),
+          labelOffset: new Offset(3.0, 18.5),
           textStyle: new TextStyle(
-            fontSize: 13.0,
+            fontFamily: "Orbitron",
+            fontSize: 11.0,
             textAlign: TextAlign.center,
             color: _darkTextColor
           ),
@@ -483,7 +476,7 @@ class CenterArea extends StatelessComponent {
           padding: new EdgeDims.all(5.0),
           child: new Text(
             "Lvl ${gameState.powerupLevel(type) + 1}",
-            style: new TextStyle(fontSize: 15.0)
+            style: new TextStyle(fontSize: 12.0)
           )
         )
       ])
@@ -500,9 +493,10 @@ class CenterArea extends StatelessComponent {
             width: 137.0,
             height: 63.0,
             label: "${gameState.laserUpgradePrice()}",
-            labelOffset: new Offset(0.0, 19.0),
+            labelOffset: new Offset(2.0, 18.0),
             textStyle: new TextStyle(
-              fontSize: 13.0,
+              fontFamily: "Orbitron",
+              fontSize: 12.0,
               textAlign: TextAlign.center,
               color: _darkTextColor
             ),
@@ -581,6 +575,7 @@ class BottomBar extends StatelessComponent {
             onPressed: onPlay,
             texture: _spriteSheetUI['btn_play.png'],
             label: "PLAY",
+            textStyle: new TextStyle(fontFamily: "Orbitron", textAlign: TextAlign.center, fontSize: 28.0, letterSpacing: 3.0),
             width: 181.0,
             height: 62.0
           )
