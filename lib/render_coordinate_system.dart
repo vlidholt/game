@@ -90,8 +90,8 @@ class RenderCoordinateSystem extends RenderProxyBox {
     super.applyPaintTransform(child, transform);
   }
 
-  void debugDescribeSettings(List<String> settings) {
-    super.debugDescribeSettings(settings);
+  void debugFillDescription(List<String> settings) {
+    super.debugFillDescription(settings);
     settings.add('systemSize: $systemSize');
     settings.add('systemType: $systemType');
   }
