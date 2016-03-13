@@ -1,6 +1,6 @@
 part of game;
 
-class CoordinateSystem extends OneChildRenderObjectWidget {
+class CoordinateSystem extends SingleChildRenderObjectWidget {
   CoordinateSystem({ Key key, this.systemSize, this.systemType: CoordinateSystemType.fixedWidth, Widget child })
     : super(key: key, child: child) {
     assert(systemSize != null);
@@ -9,9 +9,11 @@ class CoordinateSystem extends OneChildRenderObjectWidget {
   final Size systemSize;
   final CoordinateSystemType systemType;
 
-  RenderCoordinateSystem createRenderObject() => new RenderCoordinateSystem(systemSize: systemSize, systemType: systemType);
+  RenderCoordinateSystem createRenderObject(BuildContext context) {
+    return new RenderCoordinateSystem(systemSize: systemSize, systemType: systemType);
+  }
 
-  void updateRenderObject(RenderCoordinateSystem renderObject, CoordinateSystem oldWidget) {
+  void updateRenderObject(BuildContext context, RenderCoordinateSystem renderObject) {
     renderObject.systemSize = systemSize;
     renderObject.systemType = systemType;
   }
