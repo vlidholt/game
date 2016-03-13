@@ -129,7 +129,7 @@ class GameRoute extends PageRoute {
   }
 }
 
-class GameDemo extends StatefulComponent {
+class GameDemo extends StatefulWidget {
   GameDemoState createState() => new GameDemoState();
 }
 
@@ -233,7 +233,7 @@ class GameDemoState extends State<GameDemo> with BindingObserver {
   }
 }
 
-class GameScene extends StatefulComponent {
+class GameScene extends StatefulWidget {
   GameScene({this.onGameOver, this.gameState});
 
   final GameOverCallback onGameOver;
@@ -266,7 +266,7 @@ class GameSceneState extends State<GameScene> {
   }
 }
 
-class MainScene extends StatefulComponent {
+class MainScene extends StatefulWidget {
   MainScene({
     this.gameState,
     this.onUpgradePowerUp,
@@ -335,7 +335,7 @@ class MainSceneState extends State<MainScene> {
   }
 }
 
-class TopBar extends StatelessComponent {
+class TopBar extends StatelessWidget {
   TopBar({this.selection, this.onSelectTab, this.gameState});
 
   final TabBarSelection selection;
@@ -411,7 +411,7 @@ class TopBar extends StatelessComponent {
   }
 }
 
-class CenterArea extends StatelessComponent {
+class CenterArea extends StatelessWidget {
 
   CenterArea({
     this.selection,
@@ -446,16 +446,16 @@ class CenterArea extends StatelessComponent {
             _buildPowerUpButton(PowerUpType.speedBoost),
             _buildPowerUpButton(PowerUpType.speedLaser),
           ],
-        justifyContent: FlexJustifyContent.center)
+        mainAxisAlignment: MainAxisAlignment.center)
       ],
-      justifyContent: FlexJustifyContent.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       key: new Key("upgradePanel")
     );
   }
 
   Widget _buildPowerUpButton(PowerUpType type) {
     return new Padding(
-      padding: new EdgeDims.all(8.0),
+      padding: new EdgeInsets.all(8.0),
       child: new Column(
         children: <Widget>[
         new TextureButton(
@@ -473,7 +473,7 @@ class CenterArea extends StatelessComponent {
           onPressed: () => onUpgradePowerUp(type)
         ),
         new Padding(
-          padding: new EdgeDims.all(5.0),
+          padding: new EdgeInsets.all(5.0),
           child: new Text(
             "Lvl ${gameState.powerupLevel(type) + 1}",
             style: new TextStyle(fontSize: 12.0)
@@ -485,7 +485,7 @@ class CenterArea extends StatelessComponent {
 
   Widget _buildLaserUpgradeButton() {
     return new Padding(
-      padding: new EdgeDims.TRBL(8.0, 0.0, 18.0, 0.0),
+      padding: new EdgeInsets.TRBL(8.0, 0.0, 18.0, 0.0),
       child: new Stack(
         children: <Widget>[
           new TextureButton(
@@ -518,7 +518,7 @@ class CenterArea extends StatelessComponent {
   }
 }
 
-class BottomBar extends StatelessComponent {
+class BottomBar extends StatelessWidget {
 
   BottomBar({this.onPlay, this.gameState, this.onStartLevelUp, this.onStartLevelDown});
 
@@ -585,7 +585,7 @@ class BottomBar extends StatelessComponent {
   }
 }
 
-class MainSceneBackground extends StatefulComponent {
+class MainSceneBackground extends StatefulWidget {
   MainSceneBackgroundState createState() => new MainSceneBackgroundState();
 }
 
@@ -648,7 +648,7 @@ class MainSceneBackgroundNode extends NodeWithSize {
   }
 }
 
-class LaserDisplay extends StatelessComponent {
+class LaserDisplay extends StatelessWidget {
   LaserDisplay({this.level});
 
   final int level;

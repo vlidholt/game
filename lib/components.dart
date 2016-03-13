@@ -1,6 +1,6 @@
 part of game;
 
-class TextureImage extends StatelessComponent {
+class TextureImage extends StatelessWidget {
   TextureImage({
     Key key,
     this.texture,
@@ -44,7 +44,7 @@ class TextureImagePainter extends CustomPainter {
   }
 }
 
-class TextureButton extends StatefulComponent {
+class TextureButton extends StatefulWidget {
   TextureButton({
     Key key,
     this.onPressed,
