@@ -38,7 +38,7 @@ SoundAssets _sounds = new SoundAssets(_bundle);
 
 main() async {
   // Workaround for https://github.com/flutter/flutter/issues/1556
-  WidgetFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
   activity.setSystemUiVisibility(SystemUiVisibility.immersive);
 
@@ -133,15 +133,15 @@ class GameDemo extends StatefulWidget {
   GameDemoState createState() => new GameDemoState();
 }
 
-class GameDemoState extends State<GameDemo> with BindingObserver {
+class GameDemoState extends State<GameDemo> with WidgetsBindingObserver {
 
   void initState() {
     super.initState();
-    WidgetFlutterBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   void dispose() {
-    WidgetFlutterBinding.instance.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -485,7 +485,7 @@ class CenterArea extends StatelessWidget {
 
   Widget _buildLaserUpgradeButton() {
     return new Padding(
-      padding: new EdgeInsets.TRBL(8.0, 0.0, 18.0, 0.0),
+      padding: new EdgeInsets.fromLTRB(0.0, 8.0, 0.0, 18.0),
       child: new Stack(
         children: <Widget>[
           new TextureButton(
