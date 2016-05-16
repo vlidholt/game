@@ -93,10 +93,10 @@ class LevelLabel extends GameObject {
 
     Label lbl = new Label(
       "LEVEL $level",
-      new TextStyle(
+      textAlign: TextAlign.center,
+      textStyle: new TextStyle(
         fontFamily: "Orbitron",
         letterSpacing: 10.0,
-        textAlign: TextAlign.center,
         color:new Color(0xffffffff),
         fontSize: 24.0,
         fontWeight: FontWeight.w600

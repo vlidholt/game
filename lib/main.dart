@@ -40,7 +40,7 @@ main() async {
   // Workaround for https://github.com/flutter/flutter/issues/1556
   WidgetsFlutterBinding.ensureInitialized();
 
-  activity.setSystemUiVisibility(SystemUiVisibility.immersive);
+  SystemChrome.setEnabledSystemUIOverlays(0);
 
   // Load game state
   _gameState = new PersistantGameState();
@@ -467,9 +467,9 @@ class CenterArea extends StatelessWidget {
           textStyle: new TextStyle(
             fontFamily: "Orbitron",
             fontSize: 11.0,
-            textAlign: TextAlign.center,
             color: _darkTextColor
           ),
+          textAlign: TextAlign.center,
           onPressed: () => onUpgradePowerUp(type)
         ),
         new Padding(
@@ -497,9 +497,9 @@ class CenterArea extends StatelessWidget {
             textStyle: new TextStyle(
               fontFamily: "Orbitron",
               fontSize: 12.0,
-              textAlign: TextAlign.center,
               color: _darkTextColor
             ),
+            textAlign: TextAlign.center,
             onPressed: onUpgradeLaser
           ),
           new Positioned(
@@ -575,7 +575,8 @@ class BottomBar extends StatelessWidget {
             onPressed: onPlay,
             texture: _spriteSheetUI['btn_play.png'],
             label: "PLAY",
-            textStyle: new TextStyle(fontFamily: "Orbitron", textAlign: TextAlign.center, fontSize: 28.0, letterSpacing: 3.0),
+            textStyle: new TextStyle(fontFamily: "Orbitron", fontSize: 28.0, letterSpacing: 3.0),
+            textAlign: TextAlign.center,
             width: 181.0,
             height: 62.0
           )

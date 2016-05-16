@@ -54,6 +54,7 @@ class TextureButton extends StatefulWidget {
     this.height: 128.0,
     this.label,
     this.textStyle,
+    this.textAlign: TextAlign.center,
     this.labelOffset: Offset.zero
   }) : super(key: key);
 
@@ -61,6 +62,7 @@ class TextureButton extends StatefulWidget {
   final Texture texture;
   final Texture textureDown;
   final TextStyle textStyle;
+  final TextAlign textAlign;
   final String label;
   final double width;
   final double height;
@@ -135,16 +137,14 @@ class TextureButtonPainter extends CustomPainter {
     if (config.label != null) {
       TextStyle style;
       if (config.textStyle == null)
-        style = new TextStyle(textAlign: TextAlign.center, fontSize: 24.0, fontWeight: FontWeight.w700);
+        style = new TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700);
       else
         style = config.textStyle;
 
       TextSpan textSpan = new TextSpan(style: style, text: config.label);
-      TextPainter painter = new TextPainter(textSpan);
+      TextPainter painter = new TextPainter(text: textSpan, textAlign: config.textAlign);
 
-      painter.maxWidth = size.width;
-      painter.minWidth = 0.0;
-      painter.layout();
+      painter.layout(minWidth: size.width, maxWidth: size.width);
       painter.paint(canvas, new Offset(0.0, size.height / 2.0 - painter.height / 2.0 ) + config.labelOffset);
     }
   }

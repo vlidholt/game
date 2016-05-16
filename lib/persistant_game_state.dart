@@ -3,7 +3,7 @@ part of game;
 class PersistantGameState {
 
   Future load() async {
-    String dataDir = await getAppDataDir();
+    String dataDir = (await PathProvider.getApplicationDocumentsDirectory()).path;
     File file = new File(dataDir + '/gamestate.json');
     if (file.existsSync()) {
       String json = file.readAsStringSync();
@@ -21,7 +21,7 @@ class PersistantGameState {
   }
 
   Future store() async {
-    String dataDir = await getAppDataDir();
+    String dataDir = (await PathProvider.getApplicationDocumentsDirectory()).path;
     File file = new File(dataDir + '/gamestate.json');
     Map data = {
       'coins': coins,
