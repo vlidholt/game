@@ -253,10 +253,10 @@ class GameSceneState extends State<GameScene> {
       _spriteSheet,
       _spriteSheetUI,
       _sounds,
-      config.gameState,
+      widget.gameState,
       (int score, int coins, int levelReached) {
         Navigator.pop(context);
-        config.onGameOver(score, coins, levelReached);
+        widget.onGameOver(score, coins, levelReached);
       }
     );
   }
@@ -304,14 +304,14 @@ class MainSceneState extends State<MainScene> {
                   width: 320.0,
                   height: 98.0,
                   child: new TopBar(
-                    gameState: config.gameState
+                    gameState: widget.gameState
                   )
                 ),
                 new Flexible(
                   child: new CenterArea(
-                    onUpgradeLaser: config.onUpgradeLaser,
-                    onUpgradePowerUp: config.onUpgradePowerUp,
-                    gameState: config.gameState
+                    onUpgradeLaser: widget.onUpgradeLaser,
+                    onUpgradePowerUp: widget.onUpgradePowerUp,
+                    gameState: widget.gameState
                   )
                 ),
                 new SizedBox(
@@ -321,9 +321,9 @@ class MainSceneState extends State<MainScene> {
                     onPlay: () {
                       Navigator.pushNamed(context, '/game');
                     },
-                    onStartLevelUp: config.onStartLevelUp,
-                    onStartLevelDown: config.onStartLevelDown,
-                    gameState: config.gameState
+                    onStartLevelUp: widget.onStartLevelUp,
+                    onStartLevelDown: widget.onStartLevelDown,
+                    gameState: widget.gameState
                   )
                 )
               ]
