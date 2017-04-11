@@ -77,10 +77,10 @@ class TextureButtonState extends State<TextureButton> {
   Widget build(BuildContext context) {
     return new GestureDetector(
       child: new Container(
-        width: config.width,
-        height: config.height,
+        width: widget.width,
+        height: widget.height,
         child: new CustomPaint(
-          painter: new TextureButtonPainter(config, _highlight)
+          painter: new TextureButtonPainter(widget, _highlight)
         )
       ),
       onTapDown: (_) {
@@ -92,8 +92,8 @@ class TextureButtonState extends State<TextureButton> {
         setState(() {
           _highlight = false;
         });
-        if (config.onPressed != null)
-          config.onPressed();
+        if (widget.onPressed != null)
+          widget.onPressed();
       },
       onTapCancel: () {
         setState(() {
@@ -105,22 +105,22 @@ class TextureButtonState extends State<TextureButton> {
 }
 
 class TextureButtonPainter extends CustomPainter {
-  TextureButtonPainter(this.config, this.highlight);
+  TextureButtonPainter(this.widget, this.highlight);
 
-  final TextureButton config;
+  final TextureButton widget;
   final bool highlight;
 
   void paint(Canvas canvas, Size size) {
-    if (config.texture != null) {
+    if (widget.texture != null) {
       canvas.save();
       if (highlight) {
         // Draw down state
-        if (config.textureDown != null) {
-          canvas.scale(size.width / config.textureDown.size.width, size.height / config.textureDown.size.height);
-          config.textureDown.drawTexture(canvas, Point.origin, new Paint());
+        if (widget.textureDown != null) {
+          canvas.scale(size.width / widget.textureDown.size.width, size.height / widget.textureDown.size.height);
+          widget.textureDown.drawTexture(canvas, Point.origin, new Paint());
         } else {
-          canvas.scale(size.width / config.texture.size.width, size.height / config.texture.size.height);
-          config.texture.drawTexture(
+          canvas.scale(size.width / widget.texture.size.width, size.height / widget.texture.size.height);
+          widget.texture.drawTexture(
             canvas,
             Point.origin,
             new Paint()..colorFilter = new ColorFilter.mode(new Color(0x66000000), TransferMode.srcATop)
@@ -128,34 +128,34 @@ class TextureButtonPainter extends CustomPainter {
         }
       } else {
         // Draw up state
-        canvas.scale(size.width / config.texture.size.width, size.height / config.texture.size.height);
-        config.texture.drawTexture(canvas, Point.origin, new Paint());
+        canvas.scale(size.width / widget.texture.size.width, size.height / widget.texture.size.height);
+        widget.texture.drawTexture(canvas, Point.origin, new Paint());
       }
       canvas.restore();
     }
 
-    if (config.label != null) {
+    if (widget.label != null) {
       TextStyle style;
-      if (config.textStyle == null)
+      if (widget.textStyle == null)
         style = new TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700);
       else
-        style = config.textStyle;
+        style = widget.textStyle;
 
-      TextSpan textSpan = new TextSpan(style: style, text: config.label);
-      TextPainter painter = new TextPainter(text: textSpan, textAlign: config.textAlign);
+      TextSpan textSpan = new TextSpan(style: style, text: widget.label);
+      TextPainter painter = new TextPainter(text: textSpan, textAlign: widget.textAlign);
 
       painter.layout(minWidth: size.width, maxWidth: size.width);
-      painter.paint(canvas, new Offset(0.0, size.height / 2.0 - painter.height / 2.0 ) + config.labelOffset);
+      painter.paint(canvas, new Offset(0.0, size.height / 2.0 - painter.height / 2.0 ) + widget.labelOffset);
     }
   }
 
   bool shouldRepaint(TextureButtonPainter oldPainter) {
     return oldPainter.highlight != highlight
-      || oldPainter.config.texture != config.texture
-      || oldPainter.config.textureDown != config.textureDown
-      || oldPainter.config.textStyle != config.textStyle
-      || oldPainter.config.label != config.label
-      || oldPainter.config.width != config.width
-      || oldPainter.config.height != config.height;
+      || oldPainter.widget.texture != widget.texture
+      || oldPainter.widget.textureDown != widget.textureDown
+      || oldPainter.widget.textStyle != widget.textStyle
+      || oldPainter.widget.label != widget.label
+      || oldPainter.widget.width != widget.width
+      || oldPainter.widget.height != widget.height;
   }
 }
